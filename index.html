@@ -1,1053 +1,226 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="light">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Sevkiyat Yönetim Sistemi</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet"/>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:#040812;color:#e2e8f0;font-family:'IBM Plex Sans',sans-serif;min-height:100vh}
-.header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:#0A0F1E;border-bottom:1px solid #1E2D47;position:sticky;top:0;z-index:10}
-.logo{display:flex;align-items:center;gap:12px}
-.logo-icon{width:38px;height:38px;background:#F59E0B;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
-.logo-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;letter-spacing:1px;color:white;line-height:1}
-.logo-sub{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;color:#F59E0B;line-height:1;margin-top:2px}
-.kalkis-badge{background:#0F1729;border:1px solid #1E2D47;border-radius:999px;padding:6px 14px;font-size:13px;color:#94a3b8}
-.kalkis-badge strong{color:white}
-.nav{display:flex;background:#0A0F1E;border-bottom:1px solid #1E2D47;padding:0 16px;overflow-x:auto}
-.nav-btn{display:flex;align-items:center;gap:6px;padding:14px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;color:#94a3b8;border:none;border-bottom:2px solid transparent;background:none;cursor:pointer;white-space:nowrap;transition:color .2s,border-color .2s}
-.nav-btn:hover{color:white}
-.nav-btn.active{color:#F59E0B;border-bottom-color:#F59E0B}
-.nbadge{background:#1E2D47;color:#94a3b8;border-radius:999px;padding:1px 7px;font-size:11px}
-.nav-btn.active .nbadge{background:rgba(245,158,11,.2);color:#F59E0B}
-.bbadge{background:#EF4444;color:white;border-radius:999px;padding:1px 7px;font-size:11px;margin-left:4px}
-.msg{margin:12px 24px;padding:12px 16px;border-radius:10px;font-size:14px}
-.msg-ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#34d399}
-.msg-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171}
-.content{max-width:1100px;margin:0 auto;padding:24px}
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:80px;color:#94a3b8}
-.spinner{width:36px;height:36px;border:3px solid #1E2D47;border-top-color:#F59E0B;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.atbar{display:flex;gap:4px;background:#0F1729;padding:4px;border-radius:10px;width:fit-content;margin-bottom:20px;flex-wrap:wrap}
-.at{padding:8px 18px;border-radius:7px;border:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:#94a3b8;background:none;cursor:pointer;transition:all .2s}
-.at.active{background:#F59E0B;color:#040812}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-@media(max-width:700px){.grid2{grid-template-columns:1fr}}
-.card{background:#0F1729;border:1px solid #1E2D47;border-radius:12px;padding:18px}
-.mb{margin-bottom:16px}
-.mb-sm{margin-bottom:8px}
-.mt{margin-top:12px}
-.field{margin-bottom:14px}
-.flbl{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:#64748b;margin-bottom:8px}
-select,input[type=number],input[type=text]{width:100%;background:#0F1729;border:1px solid #1E2D47;color:white;border-radius:10px;padding:10px 14px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;outline:none;appearance:none;transition:border-color .2s}
-select:focus,input:focus{border-color:#F59E0B}
-select:disabled,input:disabled{opacity:.4}
-select option{background:#0F1729}
-input[type=number]{-moz-appearance:textfield}
-input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
-.krow{display:flex;align-items:center;gap:12px}
-.il-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;color:white}
-.sub{font-size:12px;color:#64748b}
-strong{color:white}
-.fcard{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#0F1729;border:1px solid #1E2D47;border-radius:12px;padding:14px;margin-bottom:8px;cursor:pointer;transition:border-color .2s,background .2s}
-.fcard:hover{border-color:#64748b}
-.fcard.top{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.04)}
-.fcard.sel{border-color:#F59E0B;background:rgba(245,158,11,.07)}
-.fleft{display:flex;align-items:center;gap:12px;min-width:0}
-.fno{width:28px;height:28px;border-radius:50%;background:#1E2D47;color:#94a3b8;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
-.fno.top{background:#10b981;color:white}
-.fad{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:white}
-.fright{text-align:right;flex-shrink:0}
-.fiyat{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;color:white}
-.fiyat.ok{color:#34d399}
-.fark{font-size:12px;color:#f87171}
-.btnp{width:100%;background:#F59E0B;color:#040812;border:none;border-radius:10px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;cursor:pointer;transition:background .2s}
-.btnp:hover{background:#fbbf24}
-.btnp:disabled{opacity:.35;cursor:not-allowed;background:#1E2D47;color:#64748b;}
-.btno{background:none;border:1px solid #1E2D47;color:#94a3b8;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;transition:border-color .2s,color .2s}
-.btno:hover{border-color:#F59E0B;color:#F59E0B}
-.btna{background:#F59E0B;color:#040812;border:none;border-radius:10px;padding:10px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap;transition:background .2s;flex-shrink:0}
-.btna:hover{background:#fbbf24}
-.btns{background:none;border:none;color:#475569;font-size:18px;cursor:pointer;padding:4px;transition:color .2s;flex-shrink:0}
-.btns:hover{color:#f87171}
-.btnl{background:none;border:none;color:#64748b;cursor:pointer;font-size:12px;transition:color .2s}
-.btnl:hover{color:#f87171}
-.empty{text-align:center;padding:60px 20px;color:#475569;font-size:15px;line-height:2}
-.gcrd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;background:#0F1729;border:1px solid #1E2D47;border-radius:12px;padding:16px;margin-bottom:10px}
-.gleft{min-width:0;flex:1}
-.grota{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:white}
-.gright{display:flex;align-items:center;gap:12px;flex-shrink:0}
-.irow{display:flex;gap:8px}
-.shdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.sitem{display:flex;align-items:center;gap:10px;background:#0F1729;border:1px solid #1E2D47;border-radius:10px;padding:10px 14px;margin-bottom:6px}
-.sdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.sad{color:white;font-weight:500;font-size:14px;flex:1}
-.ston{font-family:'IBM Plex Mono',monospace;font-size:13px;color:#F59E0B;flex-shrink:0}
-.abadge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.5px}
-.kcrd{background:#0F1729;border:1px solid #1E2D47;border-radius:12px;padding:16px;margin-bottom:12px}
-.khdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:15px}
-.pbar{height:6px;background:#1E2D47;border-radius:999px;overflow:hidden;margin:8px 0}
-.pfill{height:100%;border-radius:999px}
-.guz{display:flex;flex-direction:column;gap:4px;margin-top:10px}
-.gi{display:flex;align-items:center;gap:10px;font-size:13px;padding:3px 0}
-.gdot{font-size:14px;width:18px;text-align:center;flex-shrink:0;color:#64748b}
-.gdot.start{color:#F59E0B}
-.yalova{color:#F59E0B;font-weight:600}
-.uarea{border:2px dashed #1E2D47;border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;font-size:14px}
-.uarea:hover,.uarea.drag{border-color:#F59E0B;background:rgba(245,158,11,.04)}
-.uicon{font-size:36px;margin-bottom:8px}
-.pplan{background:#0F1729;border:1px solid #1E2D47;border-radius:14px;padding:20px;margin-bottom:20px}
-.pplanhdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #1E2D47}
-.pacrd{background:#0A0F1E;border-radius:10px;padding:14px;margin-bottom:12px}
-.pahdr{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-.piw{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.pi{background:#162035;border:1px solid #1E2D47;color:white;border-radius:8px;padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;letter-spacing:2px;width:140px;text-transform:uppercase;outline:none;transition:border-color .2s}
-.pi:focus{border-color:#F59E0B}
-.pi.ok{border-color:#10B981;color:#34d399}
-.pchk{color:#10B981;font-size:16px;font-weight:700}
-.preq{color:#64748b;font-size:11px;white-space:nowrap}
-.pbadge{background:#162035;border:1px solid #1E2D47;border-radius:6px;padding:2px 10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#F59E0B;letter-spacing:1px}
-.acw{margin-top:10px;border-top:1px solid #1E2D47;padding-top:10px}
-.aci{width:100%;background:#0F1729;border:1px solid #1E2D47;border-radius:8px;color:#e2e8f0;font-family:'IBM Plex Sans',sans-serif;font-size:13px;padding:10px 12px;resize:vertical;min-height:56px;outline:none;transition:border-color .2s;line-height:1.5}
-.aci:focus{border-color:#F59E0B}
-.aci::placeholder{color:#475569}
-.acg{margin-top:10px;padding:8px 12px;background:#0F1729;border-left:3px solid #475569;border-radius:0 6px 6px 0;font-size:12px;color:#94a3b8;line-height:1.5}
-.glist{display:flex;flex-direction:column;gap:16px}
-.gdcrd{background:#0F1729;border:1px solid #1E2D47;border-radius:14px;padding:20px}
-.gdhdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #1E2D47}
-.gacrd{background:#0A0F1E;border-radius:10px;padding:14px;margin-bottom:10px}
-.gahdr{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px}
-.dcard{background:#0F1729;border:1px solid #1E2D47;border-radius:14px;padding:20px}
-.mbadge{background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);color:#a78bfa;border-radius:6px;padding:2px 10px;font-size:12px}
-.dsel{width:auto;padding:5px 10px;font-size:12px;border-radius:8px;cursor:pointer}
-.d-plan{border-color:#475569!important;color:#94a3b8!important}
-.d-yukle{border-color:#3B82F6!important;color:#60a5fa!important}
-.d-yolda{border-color:#F59E0B!important;color:#fbbf24!important}
-.d-teslim{border-color:#10B981!important;color:#34d399!important}
-.d-iptal{border-color:#EF4444!important;color:#f87171!important}
-.mus-card{background:#0F1729;border:1px solid #1E2D47;border-radius:12px;padding:16px;transition:border-color .2s}
-.mus-card:hover{border-color:#475569}
-.cari-box{background:#0A0F1E;border:1px solid rgba(139,92,246,.25);border-radius:8px;padding:10px 14px;margin-bottom:12px}
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sevkiyat Yönetim Sistemi</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Work+Sans:wght@500;600;700;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed":               "rgb(var(--c-primary-fixed) / <alpha-value>)",
+            "on-secondary-fixed-variant":  "rgb(var(--c-on-secondary-fixed-variant) / <alpha-value>)",
+            "outline":                     "rgb(var(--c-outline) / <alpha-value>)",
+            "on-background":               "rgb(var(--c-on-background) / <alpha-value>)",
+            "tertiary-fixed-dim":          "rgb(var(--c-tertiary-fixed-dim) / <alpha-value>)",
+            "secondary-fixed-dim":         "rgb(var(--c-secondary-fixed-dim) / <alpha-value>)",
+            "primary-fixed-dim":           "rgb(var(--c-primary-fixed-dim) / <alpha-value>)",
+            "surface-dim":                 "rgb(var(--c-surface-dim) / <alpha-value>)",
+            "surface-container-highest":   "rgb(var(--c-surface-container-highest) / <alpha-value>)",
+            "inverse-surface":             "rgb(var(--c-inverse-surface) / <alpha-value>)",
+            "surface-tint":                "rgb(var(--c-surface-tint) / <alpha-value>)",
+            "surface-bright":              "rgb(var(--c-surface-bright) / <alpha-value>)",
+            "tertiary":                    "rgb(var(--c-tertiary) / <alpha-value>)",
+            "on-error":                    "rgb(var(--c-on-error) / <alpha-value>)",
+            "on-tertiary-fixed-variant":   "rgb(var(--c-on-tertiary-fixed-variant) / <alpha-value>)",
+            "tertiary-fixed":              "rgb(var(--c-tertiary-fixed) / <alpha-value>)",
+            "outline-variant":             "rgb(var(--c-outline-variant) / <alpha-value>)",
+            "surface-container-lowest":    "rgb(var(--c-surface-container-lowest) / <alpha-value>)",
+            "surface":                     "rgb(var(--c-surface) / <alpha-value>)",
+            "on-primary":                  "rgb(var(--c-on-primary) / <alpha-value>)",
+            "on-surface":                  "rgb(var(--c-on-surface) / <alpha-value>)",
+            "primary":                     "rgb(var(--c-primary) / <alpha-value>)",
+            "on-error-container":          "rgb(var(--c-on-error-container) / <alpha-value>)",
+            "inverse-on-surface":          "rgb(var(--c-inverse-on-surface) / <alpha-value>)",
+            "surface-container-low":       "rgb(var(--c-surface-container-low) / <alpha-value>)",
+            "on-secondary-container":      "rgb(var(--c-on-secondary-container) / <alpha-value>)",
+            "on-primary-fixed":            "rgb(var(--c-on-primary-fixed) / <alpha-value>)",
+            "on-tertiary":                 "rgb(var(--c-on-tertiary) / <alpha-value>)",
+            "error":                       "rgb(var(--c-error) / <alpha-value>)",
+            "secondary-fixed":             "rgb(var(--c-secondary-fixed) / <alpha-value>)",
+            "on-tertiary-container":       "rgb(var(--c-on-tertiary-container) / <alpha-value>)",
+            "on-tertiary-fixed":           "rgb(var(--c-on-tertiary-fixed) / <alpha-value>)",
+            "primary-container":           "rgb(var(--c-primary-container) / <alpha-value>)",
+            "secondary-container":         "rgb(var(--c-secondary-container) / <alpha-value>)",
+            "inverse-primary":             "rgb(var(--c-inverse-primary) / <alpha-value>)",
+            "on-secondary":                "rgb(var(--c-on-secondary) / <alpha-value>)",
+            "on-primary-container":        "rgb(var(--c-on-primary-container) / <alpha-value>)",
+            "on-secondary-fixed":          "rgb(var(--c-on-secondary-fixed) / <alpha-value>)",
+            "on-surface-variant":          "rgb(var(--c-on-surface-variant) / <alpha-value>)",
+            "surface-container-high":      "rgb(var(--c-surface-container-high) / <alpha-value>)",
+            "surface-container":           "rgb(var(--c-surface-container) / <alpha-value>)",
+            "tertiary-container":          "rgb(var(--c-tertiary-container) / <alpha-value>)",
+            "background":                  "rgb(var(--c-background) / <alpha-value>)",
+            "secondary":                   "rgb(var(--c-secondary) / <alpha-value>)",
+            "on-primary-fixed-variant":    "rgb(var(--c-on-primary-fixed-variant) / <alpha-value>)",
+            "surface-variant":             "rgb(var(--c-surface-variant) / <alpha-value>)",
+            "error-container":             "rgb(var(--c-error-container) / <alpha-value>)"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "xl": "64px",
+            "gutter": "24px",
+            "xs": "8px",
+            "sm": "16px",
+            "base": "4px",
+            "md": "24px",
+            "lg": "40px",
+            "margin": "32px"
+          },
+          "fontFamily": {
+            "label-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-md": ["Work Sans"],
+            "headline-lg": ["Work Sans"],
+            "body-sm": ["Inter"],
+            "label-lg": ["Inter"],
+            "display-lg": ["Work Sans"],
+            "body-md": ["Inter"],
+            "label-md": ["Inter"]
+          },
+          "fontSize": {
+            "label-sm": ["10px", {"lineHeight": "12px", "fontWeight": "700"}],
+            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+            "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+            "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "label-lg": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+            "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* ── Light theme (default) ── */
+    :root {
+      --c-primary-fixed:              219 226 251;
+      --c-on-secondary-fixed-variant: 101 62 0;
+      --c-outline:                    118 119 125;
+      --c-on-background:              26 28 28;
+      --c-tertiary-fixed-dim:         184 199 232;
+      --c-secondary-fixed-dim:        255 185 95;
+      --c-primary-fixed-dim:          190 198 223;
+      --c-surface-dim:                218 218 218;
+      --c-surface-container-highest:  226 226 226;
+      --c-inverse-surface:            47 49 49;
+      --c-surface-tint:               86 94 115;
+      --c-surface-bright:             249 249 249;
+      --c-tertiary:                   0 0 0;
+      --c-on-error:                   255 255 255;
+      --c-on-tertiary-fixed-variant:  56 71 98;
+      --c-tertiary-fixed:             215 227 255;
+      --c-outline-variant:            198 198 205;
+      --c-surface-container-lowest:   255 255 255;
+      --c-surface:                    249 249 249;
+      --c-on-primary:                 255 255 255;
+      --c-on-surface:                 26 28 28;
+      --c-primary:                    0 0 0;
+      --c-on-error-container:         147 0 10;
+      --c-inverse-on-surface:         240 241 241;
+      --c-surface-container-low:      243 243 244;
+      --c-on-secondary-container:     104 64 0;
+      --c-on-primary-fixed:           19 27 45;
+      --c-on-tertiary:                255 255 255;
+      --c-error:                      186 26 26;
+      --c-secondary-fixed:            255 221 184;
+      --c-on-tertiary-container:      117 132 162;
+      --c-on-tertiary-fixed:          11 27 53;
+      --c-primary-container:          19 27 45;
+      --c-secondary-container:        254 166 25;
+      --c-inverse-primary:            190 198 223;
+      --c-on-secondary:               255 255 255;
+      --c-on-primary-container:       124 131 154;
+      --c-on-secondary-fixed:         42 23 0;
+      --c-on-surface-variant:         69 70 76;
+      --c-surface-container-high:     232 232 232;
+      --c-surface-container:          238 238 238;
+      --c-tertiary-container:         11 27 53;
+      --c-background:                 249 249 249;
+      --c-secondary:                  133 83 0;
+      --c-on-primary-fixed-variant:   63 70 91;
+      --c-surface-variant:            226 226 226;
+      --c-error-container:            255 218 214;
+    }
+
+    /* ── Dark theme ── */
+    html.dark {
+      --c-primary-fixed:              219 226 251;
+      --c-on-secondary-fixed-variant: 101 62 0;
+      --c-outline:                    143 144 152;
+      --c-on-background:              226 226 226;
+      --c-tertiary-fixed-dim:         184 199 232;
+      --c-secondary-fixed-dim:        255 185 95;
+      --c-primary-fixed-dim:          190 198 223;
+      --c-surface-dim:                26 28 28;
+      --c-surface-container-highest:  55 57 57;
+      --c-inverse-surface:            226 226 226;
+      --c-surface-tint:               190 198 223;
+      --c-surface-bright:             56 58 58;
+      --c-tertiary:                   184 199 232;
+      --c-on-error:                   105 0 5;
+      --c-on-tertiary-fixed-variant:  56 71 98;
+      --c-tertiary-fixed:             215 227 255;
+      --c-outline-variant:            68 70 76;
+      --c-surface-container-lowest:   15 17 17;
+      --c-surface:                    26 28 28;
+      --c-on-primary:                 30 38 64;
+      --c-on-surface:                 226 226 226;
+      --c-primary:                    190 198 223;
+      --c-on-error-container:         255 218 214;
+      --c-inverse-on-surface:         26 28 28;
+      --c-surface-container-low:      30 32 32;
+      --c-on-secondary-container:     255 221 184;
+      --c-on-primary-fixed:           19 27 45;
+      --c-on-tertiary:                30 45 69;
+      --c-error:                      255 180 171;
+      --c-secondary-fixed:            255 221 184;
+      --c-on-tertiary-container:      215 227 255;
+      --c-on-tertiary-fixed:          11 27 53;
+      --c-primary-container:          63 70 91;
+      --c-secondary-container:        101 62 0;
+      --c-inverse-primary:            63 70 91;
+      --c-on-secondary:               69 40 10;
+      --c-on-primary-container:       219 226 251;
+      --c-on-secondary-fixed:         42 23 0;
+      --c-on-surface-variant:         197 198 205;
+      --c-surface-container-high:     44 46 46;
+      --c-surface-container:          34 36 36;
+      --c-tertiary-container:         56 71 98;
+      --c-background:                 26 28 28;
+      --c-secondary:                  255 185 95;
+      --c-on-primary-fixed-variant:   63 70 91;
+      --c-surface-variant:            68 70 76;
+      --c-error-container:            147 0 10;
+    }
+
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+
+    .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgb(var(--c-surface-container-low)); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--c-outline-variant)); border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--c-outline)); }
+
+    @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .toast-enter { animation: slideIn 0.2s ease-out; }
+  </style>
 </head>
-<body>
-<div id="app"></div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey:            "AIzaSyDW-hGQy23mZRNP9yFW7QkTrzwJ7T6inZ8",
-  authDomain:        "akkim-sevkiyat.firebaseapp.com",
-  projectId:         "akkim-sevkiyat",
-  storageBucket:     "akkim-sevkiyat.firebasestorage.app",
-  messagingSenderId: "1030526589677",
-  appId:             "1:1030526589677:web:43161ed65adbf75d400ae4"
-};
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-
-// ── VERİ PLACEHOLDER (Python tarafından doldurulacak) ──
-const ILLER = [
-  {ad:"Adana",ilceler:["Aladağ","Ceyhan","Çukurova","Feke","İmamoğlu","Karaisalı","Karataş","Kozan","Pozantı","Saimbeyli","Sarıçam","Seyhan","Tufanbeyli","Yumurtalık","Yüreğir"]},
-  {ad:"Adıyaman",ilceler:["Merkez","Besni","Çelikhan","Gerger","Gölbaşı","Kahta","Samsat","Sincik","Tut"]},
-  {ad:"Afyonkarahisar",ilceler:["Merkez","Başmakçı","Bayat","Bolvadin","Çay","Çobanlar","Dazkırı","Dinar","Emirdağ","Hocalar","İhsaniye","İscehisar","Kızılören","Sandıklı","Sinanpaşa","Sultandağı","Şuhut"]},
-  {ad:"Ağrı",ilceler:["Merkez","Diyadin","Doğubayazıt","Eleşkirt","Hamur","Patnos","Taşlıçay","Tutak"]},
-  {ad:"Amasya",ilceler:["Merkez","Göynücek","Gümüşhacıköy","Hamamözü","Merzifon","Suluova","Taşova"]},
-  {ad:"Ankara",ilceler:["Altındağ","Ayaş","Bala","Beypazarı","Çamlıdere","Çankaya","Çubuk","Elmadağ","Etimesgut","Evren","Gölbaşı","Güdül","Haymana","Kalecik","Kazan","Keçiören","Kızılcahamam","Mamak","Nallıhan","Polatlı","Pursaklar","Sincan","Şereflikoçhisar","Yenimahalle"]},
-  {ad:"Antalya",ilceler:["Akseki","Aksu","Alanya","Demre","Döşemealtı","Elmalı","Finike","Gazipaşa","Gündoğmuş","İbradı","Kaş","Kemer","Kepez","Konyaaltı","Korkuteli","Kumluca","Manavgat","Muratpaşa","Serik"]},
-  {ad:"Artvin",ilceler:["Merkez","Ardanuç","Arhavi","Borçka","Hopa","Murgul","Şavşat","Yusufeli"]},
-  {ad:"Aydın",ilceler:["Efeler","Bozdoğan","Buharkent","Çine","Didim","Germencik","İncirliova","Karacasu","Karpuzlu","Koçarlı","Köşk","Kuşadası","Kuyucak","Nazilli","Söke","Sultanhisar","Yenipazar"]},
-  {ad:"Balıkesir",ilceler:["Altıeylül","Ayvalık","Balya","Bandırma","Bigadiç","Burhaniye","Dursunbey","Edremit","Erdek","Gömeç","Gönen","Havran","İvrindi","Karesi","Kepsut","Manyas","Marmara","Savaştepe","Sındırgı","Susurluk"]},
-  {ad:"Bilecik",ilceler:["Merkez","Bozöyük","Gölpazarı","İnhisar","Osmaneli","Pazaryeri","Söğüt","Yenipazar"]},
-  {ad:"Bingöl",ilceler:["Merkez","Adaklı","Genç","Karlıova","Kiğı","Solhan","Yayladere","Yedisu"]},
-  {ad:"Bitlis",ilceler:["Merkez","Adilcevaz","Ahlat","Güroymak","Hizan","Mutki","Tatvan"]},
-  {ad:"Bolu",ilceler:["Merkez","Dörtdivan","Gerede","Göynük","Kıbrıscık","Mengen","Mudurnu","Seben","Yeniçağa"]},
-  {ad:"Burdur",ilceler:["Merkez","Ağlasun","Altınyayla","Bucak","Çavdır","Çeltikçi","Gölhisar","Karamanlı","Kemer","Tefenni","Yeşilova"]},
-  {ad:"Bursa",ilceler:["Osmangazi","Yıldırım","Nilüfer","Büyükorhan","Gemlik","Gürsu","Harmancık","İnegöl","İznik","Karacabey","Keles","Kestel","Mudanya","Mustafakemalpaşa","Orhaneli","Orhangazi","Yenişehir"]},
-  {ad:"Çanakkale",ilceler:["Merkez","Ayvacık","Bayramiç","Biga","Bozcaada","Çan","Eceabat","Ezine","Gelibolu","Gökçeada","Lapseki","Yenice"]},
-  {ad:"Çankırı",ilceler:["Merkez","Atkaracalar","Bayramören","Çerkeş","Eldivan","Ilgaz","Kızılırmak","Korgun","Kurşunlu","Orta","Şabanözü","Yapraklı"]},
-  {ad:"Çorum",ilceler:["Merkez","Alaca","Bayat","Boğazkale","Dodurga","İskilip","Kargı","Laçin","Mecitözü","Oğuzlar","Ortaköy","Osmancık","Sungurlu","Uğurludağ"]},
-  {ad:"Denizli",ilceler:["Merkezefendi","Pamukkale","Acıpayam","Babadağ","Baklan","Bekilli","Beyağaç","Bozkurt","Buldan","Çal","Çameli","Çardak","Çivril","Güney","Honaz","Kale","Sarayköy","Serinhisar","Tavas"]},
-  {ad:"Diyarbakır",ilceler:["Bağlar","Sur","Kayapınar","Yenişehir","Bismil","Çermik","Çınar","Çüngüş","Dicle","Eğil","Ergani","Hani","Hazro","Kocaköy","Kulp","Lice","Silvan"]},
-  {ad:"Edirne",ilceler:["Merkez","Enez","Havsa","İpsala","Keşan","Lalapaşa","Meriç","Süloğlu","Uzunköprü"]},
-  {ad:"Elazığ",ilceler:["Merkez","Ağın","Alacakaya","Arıcak","Baskil","Karakoçan","Keban","Kovancılar","Maden","Palu","Sivrice"]},
-  {ad:"Erzincan",ilceler:["Merkez","Çayırlı","İliç","Kemah","Kemaliye","Otlukbeli","Refahiye","Tercan","Üzümlü"]},
-  {ad:"Erzurum",ilceler:["Palandöken","Yakutiye","Aziziye","Aşkale","Çat","Hınıs","Horasan","İspir","Karayazı","Köprüköy","Narman","Oltu","Olur","Pasinler","Pazaryolu","Şenkaya","Tekman","Tortum","Uzundere"]},
-  {ad:"Eskişehir",ilceler:["Odunpazarı","Tepebaşı","Alpu","Beylikova","Çifteler","Günyüzü","Han","İnönü","Mahmudiye","Mihalgazi","Mihalıççık","Sarıcakaya","Seyitgazi","Sivrihisar"]},
-  {ad:"Gaziantep",ilceler:["Şahinbey","Şehitkamil","Araban","İslahiye","Karkamış","Nizip","Nurdağı","Oğuzeli","Yavuzeli"]},
-  {ad:"Giresun",ilceler:["Merkez","Alucra","Bulancak","Çamoluk","Çanakçı","Dereli","Doğankent","Espiye","Eynesil","Görele","Güce","Keşap","Piraziz","Şebinkarahisar","Tirebolu","Yağlıdere"]},
-  {ad:"Gümüşhane",ilceler:["Merkez","Kelkit","Köse","Kürtün","Şiran","Torul"]},
-  {ad:"Hakkari",ilceler:["Merkez","Çukurca","Derecik","Şemdinli","Yüksekova"]},
-  {ad:"Hatay",ilceler:["Antakya","Defne","İskenderun","Altınözü","Arsuz","Belen","Dörtyol","Erzin","Hassa","Kırıkhan","Kumlu","Payas","Reyhanlı","Samandağ","Yayladağı"]},
-  {ad:"Isparta",ilceler:["Merkez","Aksu","Atabey","Eğirdir","Gelendost","Gönen","Keçiborlu","Senirkent","Sütçüler","Şarkikaraağaç","Uluborlu","Yalvaç","Yenişarbademli"]},
-  {ad:"İstanbul",ilceler:["Adalar","Arnavutköy","Ataşehir","Avcılar","Bağcılar","Bahçelievler","Bakırköy","Başakşehir","Bayrampaşa","Beşiktaş","Beykoz","Beylikdüzü","Beyoğlu","Büyükçekmece","Çatalca","Çekmeköy","Esenler","Esenyurt","Eyüpsultan","Fatih","Gaziosmanpaşa","Güngören","Kadıköy","Kağıthane","Kartal","Küçükçekmece","Maltepe","Pendik","Sancaktepe","Sarıyer","Silivri","Sultanbeyli","Sultangazi","Şile","Şişli","Tuzla","Ümraniye","Üsküdar","Zeytinburnu"]},
-  {ad:"İzmir",ilceler:["Konak","Bornova","Karşıyaka","Buca","Bayraklı","Karabağlar","Aliağa","Balçova","Bayındır","Bergama","Beydağ","Çeşme","Çiğli","Dikili","Foça","Gaziemir","Güzelbahçe","Karaburun","Kemalpaşa","Kınık","Kiraz","Menderes","Menemen","Narlıdere","Ödemiş","Seferihisar","Selçuk","Tire","Torbalı","Urla"]},
-  {ad:"Kahramanmaraş",ilceler:["Dulkadiroğlu","Onikişubat","Afşin","Andırın","Çağlayancerit","Ekinözü","Elbistan","Göksun","Nurhak","Pazarcık","Türkoğlu"]},
-  {ad:"Karabük",ilceler:["Merkez","Eflani","Eskipazar","Ovacık","Safranbolu","Yenice"]},
-  {ad:"Karaman",ilceler:["Merkez","Ayrancı","Başyayla","Ermenek","Kazımkarabekir","Sarıveliler"]},
-  {ad:"Kars",ilceler:["Merkez","Akyaka","Arpaçay","Digor","Kağızman","Sarıkamış","Selim","Susuz"]},
-  {ad:"Kastamonu",ilceler:["Merkez","Abana","Ağlı","Araç","Azdavay","Bozkurt","Çatalzeytin","Cide","Daday","Devrekani","Doğanyurt","Hanönü","İhsangazi","İnebolu","Küre","Pınarbaşı","Seydiler","Şenpazar","Taşköprü","Tosya"]},
-  {ad:"Kayseri",ilceler:["Kocasinan","Melikgazi","Talas","Akkışla","Bünyan","Develi","Felahiye","Hacılar","İncesu","Özvatan","Pınarbaşı","Sarıoğlan","Sarız","Tomarza","Yahyalı","Yeşilhisar"]},
-  {ad:"Kilis",ilceler:["Merkez","Elbeyli","Musabeyli","Polateli"]},
-  {ad:"Kırıkkale",ilceler:["Merkez","Bahşili","Balışeyh","Çelebi","Delice","Karakeçili","Keskin","Sulakyurt","Yahşihan"]},
-  {ad:"Kırklareli",ilceler:["Merkez","Babaeski","Demirköy","Kofçaz","Lüleburgaz","Pehlivanköy","Pınarhisar","Vize"]},
-  {ad:"Kırşehir",ilceler:["Merkez","Akçakent","Akpınar","Boztepe","Çiçekdağı","Kaman","Mucur"]},
-  {ad:"Kocaeli",ilceler:["İzmit","Gebze","Başiskele","Çayırova","Darıca","Derince","Dilovası","Gölcük","Kandıra","Karamürsel","Kartepe","Körfez"]},
-  {ad:"Konya",ilceler:["Karatay","Meram","Selçuklu","Ahırlı","Akören","Akşehir","Altınekin","Beyşehir","Bozkır","Cihanbeyli","Çeltik","Çumra","Derbent","Derebucak","Doğanhisar","Emirgazi","Ereğli","Güneysınır","Hadim","Halkapınar","Hüyük","Ilgın","Kadınhanı","Karapınar","Kulu","Sarayönü","Seydişehir","Taşkent","Tuzlukçu","Yalıhüyük","Yunak"]},
-  {ad:"Kütahya",ilceler:["Merkez","Altıntaş","Aslanapa","Çavdarhisar","Domaniç","Dumlupınar","Emet","Gediz","Hisarcık","Pazarlar","Simav","Şaphane","Tavşanlı"]},
-  {ad:"Malatya",ilceler:["Battalgazi","Yeşilyurt","Akçadağ","Arapgir","Arguvan","Darende","Doğanşehir","Doğanyol","Hekimhan","Kale","Kuluncak","Pütürge","Yazıhan"]},
-  {ad:"Manisa",ilceler:["Şehzadeler","Yunusemre","Ahmetli","Akhisar","Alaşehir","Demirci","Gölmarmara","Gördes","Kırkağaç","Köprübaşı","Kula","Salihli","Sarıgöl","Saruhanlı","Selendi","Soma","Turgutlu"]},
-  {ad:"Mardin",ilceler:["Artuklu","Dargeçit","Derik","Kızıltepe","Mazıdağı","Midyat","Nusaybin","Ömerli","Savur","Yeşilli"]},
-  {ad:"Mersin",ilceler:["Akdeniz","Mezitli","Toroslar","Yenişehir","Anamur","Aydıncık","Bozyazı","Çamlıyayla","Erdemli","Gülnar","Mut","Silifke","Tarsus"]},
-  {ad:"Muğla",ilceler:["Menteşe","Bodrum","Dalaman","Datça","Fethiye","Kavaklıdere","Köyceğiz","Marmaris","Milas","Ortaca","Seydikemer","Ula","Yatağan"]},
-  {ad:"Muş",ilceler:["Merkez","Bulanık","Hasköy","Korkut","Malazgirt","Varto"]},
-  {ad:"Nevşehir",ilceler:["Merkez","Acıgöl","Avanos","Derinkuyu","Gülşehir","Hacıbektaş","Kozaklı","Ürgüp"]},
-  {ad:"Niğde",ilceler:["Merkez","Altunhisar","Bor","Çamardı","Çiftlik","Ulukışla"]},
-  {ad:"Ordu",ilceler:["Altınordu","Akkuş","Aybastı","Çamaş","Çatalpınar","Çaybaşı","Fatsa","Gölköy","Gülyalı","Gürgentepe","İkizce","Kabadüz","Kabataş","Korgan","Kumru","Mesudiye","Perşembe","Ulubey","Ünye"]},
-  {ad:"Osmaniye",ilceler:["Merkez","Bahçe","Düziçi","Hasanbeyli","Kadirli","Sumbas","Toprakkale"]},
-  {ad:"Rize",ilceler:["Merkez","Ardeşen","Çamlıhemşin","Çayeli","Derepazarı","Fındıklı","Güneysu","Hemşin","İkizdere","İyidere","Kalkandere","Pazar"]},
-  {ad:"Sakarya",ilceler:["Adapazarı","Akyazı","Arifiye","Erenler","Ferizli","Geyve","Hendek","Karapürçek","Karasu","Kaynarca","Kocaali","Pamukova","Sapanca","Serdivan","Söğütlü","Taraklı"]},
-  {ad:"Samsun",ilceler:["Atakum","Canik","İlkadım","19 Mayıs","Alaçam","Asarcık","Ayvacık","Bafra","Çarşamba","Kavak","Ladik","Salıpazarı","Tekkeköy","Terme","Vezirköprü","Yakakent"]},
-  {ad:"Siirt",ilceler:["Merkez","Baykan","Eruh","Kurtalan","Pervari","Şirvan","Tillo"]},
-  {ad:"Sinop",ilceler:["Merkez","Ayancık","Boyabat","Dikmen","Durağan","Erfelek","Gerze","Saraydüzü","Türkeli"]},
-  {ad:"Sivas",ilceler:["Merkez","Akıncılar","Altınyayla","Divriği","Doğanşar","Gemerek","Gölova","Hafik","İmranlı","Kangal","Koyulhisar","Suşehri","Şarkışla","Ulaş","Yıldızeli","Zara"]},
-  {ad:"Şanlıurfa",ilceler:["Eyyübiye","Haliliye","Karaköprü","Akçakale","Birecik","Bozova","Ceylanpınar","Halfeti","Harran","Hilvan","Siverek","Suruç","Viranşehir"]},
-  {ad:"Şırnak",ilceler:["Merkez","Beytüşşebap","Cizre","Güçlükonak","İdil","Silopi","Uludere"]},
-  {ad:"Tekirdağ",ilceler:["Süleymanpaşa","Çerkezköy","Çorlu","Ergene","Hayrabolu","Kapaklı","Malkara","Marmaraereğlisi","Muratlı","Saray","Şarköy"]},
-  {ad:"Tokat",ilceler:["Merkez","Almus","Artova","Başçiftlik","Erbaa","Niksar","Pazar","Reşadiye","Sulusaray","Turhal","Yeşilyurt","Zile"]},
-  {ad:"Trabzon",ilceler:["Ortahisar","Akçaabat","Araklı","Arsin","Beşikdüzü","Çarşıbaşı","Çaykara","Dernekpazarı","Düzköy","Hayrat","Köprübaşı","Maçka","Of","Sürmene","Şalpazarı","Tonya","Vakfıkebir","Yomra"]},
-  {ad:"Tunceli",ilceler:["Merkez","Çemişgezek","Hozat","Mazgirt","Nazımiye","Ovacık","Pertek","Pülümür"]},
-  {ad:"Uşak",ilceler:["Merkez","Banaz","Eşme","Karahallı","Sivaslı","Ulubey"]},
-  {ad:"Van",ilceler:["İpekyolu","Tuşba","Bahçesaray","Başkale","Çaldıran","Çatak","Edremit","Erciş","Gevaş","Gürpınar","Muradiye","Özalp","Saray"]},
-  {ad:"Yalova",ilceler:["Merkez","Altınova","Armutlu","Çınarcık","Çiftlikköy","Termal"]},
-  {ad:"Yozgat",ilceler:["Merkez","Akdağmadeni","Aydıncık","Boğazlıyan","Çandır","Çayıralan","Çekerek","Kadışehri","Saraykent","Sarıkaya","Şefaatli","Sorgun","Yenifakılı","Yerköy"]},
-  {ad:"Zonguldak",ilceler:["Merkez","Alaplı","Çaycuma","Devrek","Ereğli","Gökçebey","Kilimli","Kozlu"]},
-  {ad:"Aksaray",ilceler:["Merkez","Ağaçören","Eskil","Gülağaç","Güzelyurt","Ortaköy","Sarıyahşi","Sultanhanı"]},
-  {ad:"Ardahan",ilceler:["Merkez","Çıldır","Damal","Göle","Hanak","Posof"]},
-  {ad:"Bartın",ilceler:["Merkez","Amasra","Kurucaşile","Ulus"]},
-  {ad:"Batman",ilceler:["Merkez","Beşiri","Gercüş","Hasankeyf","Kozluk","Sason"]},
-  {ad:"Bayburt",ilceler:["Merkez","Aydıntepe","Demirözü"]},
-  {ad:"Düzce",ilceler:["Merkez","Akçakoca","Cumayeri","Çilimli","Gölyaka","Gümüşova","Kaynaşlı","Yığılca"]},
-  {ad:"Iğdır",ilceler:["Merkez","Aralık","Karakoyunlu","Tuzluca"]},
-];
-
-// Parsiyel ilçeler (koordinatlarıyla)
-const PARSIYEL = {
-  "İstanbul": { renk:"#3B82F6", ilceler:[
-    {ad:"Adalar",lat:40.873,lng:29.120},{ad:"Arnavutköy",lat:41.185,lng:28.739},{ad:"Ataşehir",lat:40.992,lng:29.124},
-    {ad:"Avcılar",lat:40.979,lng:28.722},{ad:"Bağcılar",lat:41.040,lng:28.857},{ad:"Bahçelievler",lat:40.998,lng:28.858},
-    {ad:"Bakırköy",lat:40.981,lng:28.874},{ad:"Başakşehir",lat:41.093,lng:28.802},{ad:"Bayrampaşa",lat:41.046,lng:28.911},
-    {ad:"Beşiktaş",lat:41.042,lng:29.007},{ad:"Beykoz",lat:41.132,lng:29.109},{ad:"Beylikdüzü",lat:40.979,lng:28.643},
-    {ad:"Beyoğlu",lat:41.033,lng:28.977},{ad:"Büyükçekmece",lat:41.018,lng:28.575},{ad:"Çatalca",lat:41.143,lng:28.463},
-    {ad:"Çekmeköy",lat:41.041,lng:29.184},{ad:"Esenler",lat:41.044,lng:28.876},{ad:"Esenyurt",lat:41.028,lng:28.676},
-    {ad:"Eyüpsultan",lat:41.055,lng:28.933},{ad:"Fatih",lat:41.019,lng:28.940},{ad:"Gaziosmanpaşa",lat:41.066,lng:28.912},
-    {ad:"Güngören",lat:41.021,lng:28.878},{ad:"Kadıköy",lat:40.983,lng:29.080},{ad:"Kağıthane",lat:41.083,lng:28.971},
-    {ad:"Kartal",lat:40.911,lng:29.186},{ad:"Küçükçekmece",lat:41.000,lng:28.776},{ad:"Maltepe",lat:40.935,lng:29.149},
-    {ad:"Pendik",lat:40.876,lng:29.257},{ad:"Sancaktepe",lat:41.002,lng:29.232},{ad:"Sarıyer",lat:41.167,lng:29.057},
-    {ad:"Silivri",lat:41.073,lng:28.247},{ad:"Sultanbeyli",lat:40.962,lng:29.267},{ad:"Sultangazi",lat:41.107,lng:28.883},
-    {ad:"Şile",lat:41.176,lng:29.611},{ad:"Şişli",lat:41.060,lng:28.988},{ad:"Tuzla",lat:40.818,lng:29.300},
-    {ad:"Ümraniye",lat:41.016,lng:29.117},{ad:"Üsküdar",lat:41.023,lng:29.015},{ad:"Zeytinburnu",lat:41.003,lng:28.906}
-  ]},
-  "Tekirdağ": { renk:"#10B981", ilceler:[
-    {ad:"Süleymanpaşa",lat:40.977,lng:27.513},{ad:"Çerkezköy",lat:41.288,lng:28.003},{ad:"Çorlu",lat:41.159,lng:27.800},
-    {ad:"Ergene",lat:41.320,lng:27.950},{ad:"Hayrabolu",lat:41.214,lng:27.101},{ad:"Kapaklı",lat:41.340,lng:27.970},
-    {ad:"Malkara",lat:41.295,lng:26.896},{ad:"Marmaraereğlisi",lat:40.969,lng:27.961},{ad:"Muratlı",lat:41.169,lng:27.494},
-    {ad:"Saray",lat:41.441,lng:28.119},{ad:"Şarköy",lat:40.615,lng:27.101}
-  ]},
-  "Edirne": { renk:"#F59E0B", ilceler:[
-    {ad:"Merkez",lat:41.678,lng:26.556},{ad:"Enez",lat:40.726,lng:26.074},{ad:"Havsa",lat:41.550,lng:26.815},
-    {ad:"İpsala",lat:40.919,lng:26.379},{ad:"Keşan",lat:40.858,lng:26.636},{ad:"Lalapaşa",lat:41.829,lng:26.730},
-    {ad:"Meriç",lat:41.188,lng:26.399},{ad:"Süloğlu",lat:41.779,lng:26.905},{ad:"Uzunköprü",lat:41.271,lng:26.691}
-  ]}
-};
-const YALOVA = {lat:40.650, lng:29.267};
-
-// ── YARDIMCI ──
-function mesafe(a,b,c,d){const R=6371,dL=(c-a)*Math.PI/180,dN=(d-b)*Math.PI/180,x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
-function fmtTarih(ts){if(!ts)return"-";const d=ts.toDate?ts.toDate():new Date(ts);return d.toLocaleString("tr-TR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});}
-function aracTipi(t){if(t<=10)return{tip:"Kamyonet",max:10,icon:"🚐",renk:"#10B981"};if(t<=19)return{tip:"Kamyon",max:19,icon:"🚛",renk:"#3B82F6"};return{tip:"TIR",max:24,icon:"🚚",renk:"#F59E0B"};}
-function tonajiBol(top){const lst=[];let k=top;while(k>0.01){let y=k>19?Math.min(k,24):k>10?Math.min(k,19):Math.min(k,10);y=parseFloat(y.toFixed(2));lst.push({...aracTipi(y===24?24:y===19?19:y),yukTon:y});k=parseFloat((k-y).toFixed(10));}return lst;}
-function rotaSirala(pts){const kal=[...pts],s=[];let mv={lat:40.650,lng:29.267};while(kal.length){let ei=0,ed=Infinity;kal.forEach((n,i)=>{const d=mesafe(mv.lat,mv.lng,n.ilce.lat,n.ilce.lng);if(d<ed){ed=d;ei=i;}});s.push(kal[ei]);mv={lat:kal[ei].ilce.lat,lng:kal[ei].ilce.lng};kal.splice(ei,1);}return s;}
-function grupla(sec){
-  const MAX=24,YALOVA={lat:40.650,lng:29.267};
-  if(!sec.length)return[];
-  const rots=sec.map((s,i)=>({id:i,noktalar:[s],toplamTon:s.tonaj}));
-  const tsk=[];
-  for(let i=0;i<sec.length;i++)for(let j=i+1;j<sec.length;j++){
-    const ni=sec[i],nj=sec[j];
-    tsk.push({i,j,s:mesafe(YALOVA.lat,YALOVA.lng,ni.ilce.lat,ni.ilce.lng)+mesafe(YALOVA.lat,YALOVA.lng,nj.ilce.lat,nj.ilce.lng)-mesafe(ni.ilce.lat,ni.ilce.lng,nj.ilce.lat,nj.ilce.lng)});
-  }
-  tsk.sort((a,b)=>b.s-a.s);
-  const nr=sec.map((_,i)=>i),rm=new Map(rots.map((r,i)=>[i,r]));
-  for(const {i,j} of tsk){
-    const ri=nr[i],rj=nr[j];if(ri===rj)continue;
-    const rI=rm.get(ri),rJ=rm.get(rj);if(!rI||!rJ)continue;
-    if(rI.toplamTon+rJ.toplamTon>MAX)continue;
-    rI.noktalar=[...rI.noktalar,...rJ.noktalar];rI.toplamTon+=rJ.toplamTon;
-    rJ.noktalar.forEach(n=>{const idx=sec.indexOf(n);if(idx>=0)nr[idx]=ri;});rm.delete(rj);
-  }
-  const res=[];let no=1;
-  rm.forEach(r=>{const a=aracTipi(r.toplamTon);res.push({no:no++,noktalar:rotaSirala(r.noktalar),toplamTon:r.toplamTon,maxTon:a.max,tip:a.tip,icon:a.icon,renk:a.renk});});
-  res.sort((a,b)=>b.toplamTon-a.toplamTon);res.forEach((k,i)=>k.no=i+1);return res;
-}
-
-// ── FIREBASE ──
-async function fGetir(){const s=await getDocs(collection(db,"firmalar"));return s.docs.map(d=>({id:d.id,...d.data()}));}
-async function fKaydet(list){const b=writeBatch(db);list.forEach(f=>{const r=doc(collection(db,"firmalar"));b.set(r,{ad:f.ad,iletisim:f.iletisim||"",fiyatlar:f.fiyatlar,guncelleme:serverTimestamp()});});await b.commit();}
-async function fSil(id){await deleteDoc(doc(db,"firmalar",id));}
-async function saGetir(){const q=query(collection(db,"sehirlerarasi_sevkiyatlar"),orderBy("tarih","desc"));const s=await getDocs(q);return s.docs.map(d=>({id:d.id,...d.data()}));}
-async function saKaydet(data){return addDoc(collection(db,"sehirlerarasi_sevkiyatlar"),{...data,tarih:serverTimestamp()});}
-async function saSil2(id){await deleteDoc(doc(db,"sehirlerarasi_sevkiyatlar",id));}
-async function pGetir(){const q=query(collection(db,"parsiyel_planlar"),orderBy("tarih","desc"));const s=await getDocs(q);return s.docs.map(d=>({id:d.id,...d.data()}));}
-async function pKaydet(data){return addDoc(collection(db,"parsiyel_planlar"),{...data,tarih:serverTimestamp()});}
-async function pSil2(id){await deleteDoc(doc(db,"parsiyel_planlar",id));}
-async function musteriGetir(){const s=await getDocs(collection(db,"musteriler"));return s.docs.map(d=>({id:d.id,...d.data()}));}
-async function musteriKaydet(data){return addDoc(collection(db,"musteriler"),{...data,tarih:serverTimestamp()});}
-async function musteriTopluKaydet(list){const b=writeBatch(db);list.forEach(m=>{const r=doc(collection(db,"musteriler"));b.set(r,{ad:m.ad,sevk_adresi:m.sevk_adresi||"",il:m.il||"",ilce:m.ilce||"",tarih:serverTimestamp()});});await b.commit();}
-async function musteriSil(id){await deleteDoc(doc(db,"musteriler",id));}
-async function durumGuncelle(koleksiyon,id,durum){const {updateDoc}=await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");await updateDoc(doc(db,koleksiyon,id),{durum});}
-
-// ── EXCEL ──
-function normH(h){return String(h).trim().replace(/[İI]/g,"I").replace(/[Şş]/g,"s").replace(/[Ğğ]/g,"g").replace(/[Üü]/g,"u").replace(/[Öö]/g,"o").replace(/[Çç]/g,"c").replace(/ı/g,"i").toLowerCase().replace(/^.*firma.*/,"firma").replace(/^.*ilc.*/,"ilce").replace(/^.*\bil\b.*/,"il").replace(/^.*seh.*/,"il").replace(/^.*fiy.*/,"fiyat").replace(/^.*\buc\b.*/,"fiyat").replace(/^.*tut.*/,"fiyat").replace(/^.*tel.*/,"tel").replace(/^.*ilet.*/,"tel");}
-function normHdr(h){const s=String(h).trim();const l=s.replace(/İ/g,"I").replace(/Ş/g,"S").replace(/Ğ/g,"G").replace(/Ü/g,"U").replace(/Ö/g,"O").replace(/Ç/g,"C").replace(/ı/g,"i").replace(/ş/g,"s").replace(/ğ/g,"g").replace(/ü/g,"u").replace(/ö/g,"o").replace(/ç/g,"c").toLowerCase();if(l.includes("firma"))return"firma";if(l.includes("ilc"))return"ilce";if((l.includes("il")&&!l.includes("ilc"))||l.includes("seh"))return"il";if(l.includes("fiy")||l.includes("tut"))return"fiyat";if(l.includes("tel")||l.includes("ilet"))return"tel";return l;}
-async function excelOku(file){
-  const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:"array"});const ws=wb.Sheets[wb.SheetNames[0]];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:""});
-  let hr=-1;
-  for(let i=0;i<Math.min(raw.length,15);i++){const t=raw[i].map(c=>normHdr(String(c))).filter(h=>["firma","il","ilce","fiyat","tel"].includes(h));if(t.length>=3){hr=i;break;}}
-  if(hr===-1){showToast("Baslik satiri bulunamadi.",false);return[];}
-  const hdrs=raw[hr].map(c=>normHdr(String(c))),rows=[];
-  for(let i=hr+1;i<raw.length;i++){if(raw[i].every(c=>c===""||c===null))continue;const r={};hdrs.forEach((h,j)=>r[h]=String(raw[i][j]||"").trim());if(r.firma&&r.il&&r.ilce)rows.push(r);}
-  return rows;
-}
-function rowsToFirmalar(rows){const m={};rows.forEach(r=>{const f=parseFloat(String(r.fiyat||"").replace(/[^\d.,]/g,"").replace(",","."));if(isNaN(f)||f<=0)return;if(!m[r.firma])m[r.firma]={ad:r.firma,iletisim:r.tel||"",fiyatlar:{}};m[r.firma].fiyatlar[r.il+"__"+r.ilce]=f;});return Object.values(m);}
-
-// ── STATE ──
-const S={
-  tab:"dashboard",at:{sa:"yeni",p:"yeni",f:"liste"},
-  firmalar:[],saGecmis:[],pGecmis:[],musteriler:[],
-  sa_il:"",sa_ilce:"",sa_firma:null,sa_tonaj:"",sa_musteri:"",sa_bekleme:[],
-  p_sec:[],p_il:"",p_ilce:"",p_musteri:"",p_bekleme:[],
-  loading:true,saving:false,toast:null
-};
-function showToast(text,ok=true){S.toast={text,ok};render();setTimeout(()=>{S.toast=null;render();},3000);}
-
-// ── HTML HELPERS ──
-function pb(pct,renk){return `<div class="pbar"><div class="pfill" style="width:${Math.min(pct,100)}%;background:${renk}"></div></div>`;}
-function ab(a){return `<div class="abadge" style="background:${a.renk}20;border:1px solid ${a.renk}50;color:${a.renk}">${a.icon} ${a.tip}</div>`;}
-function guzSA(ilce,il,renk){return `<div class="guz"><div class="gi"><span class="gdot start">●</span><span class="yalova">Yalova (Kalkis)</span></div><div class="gi"><span class="gdot" style="border-color:${renk}">○</span><span>${ilce}</span><span class="sub"> · ${il}</span></div><div class="gi"><span class="gdot start">◀</span><span class="sub">Yalova (Donus)</span></div></div>`;}
-function guzP(k){let h=`<div class="guz"><div class="gi"><span class="gdot start">●</span><span class="yalova">Yalova (Kalkis)</span></div>`;k.noktalar.forEach(n=>{h+=`<div class="gi"><span class="gdot" style="border-color:${k.renk}">○</span><span>${n.ilce.ad}</span><span class="sub"> ${n.ilce.il}</span><span class="ston" style="color:${k.renk}">${n.tonaj} ton</span></div>`;});h+=`<div class="gi"><span class="gdot start">◀</span><span class="sub">Yalova (Donus)</span></div></div>`;return h;}
-function piInput(id,val,fn){const ok=(val||"").trim().length>=3;return `<div class="piw"><input class="pi${ok?" ok":""}" id="${id}" type="text" placeholder="34 ABC 123" maxlength="12" value="${val||""}" oninput="${fn}" style="text-transform:uppercase"/><span id="${id}-c" class="${ok?"pchk":"preq"}">${ok?"✓":"Plaka"}</span></div>`;}
-function acBox(id,val,fn){return `<div class="acw"><textarea id="${id}" class="aci" placeholder="Aciklama..." oninput="${fn}">${val||""}</textarea></div>`;}
-
-// ── RENDER ──
-function render(){
-  const nav=["dashboard","sehirlerarasi","parsiyel","musteriler","firmalar"];
-  const navLbls={"dashboard":"📊 Dashboard","sehirlerarasi":"🛣️ Sehirler Arasi","parsiyel":"📦 Parsiyel","musteriler":"🏢 Musteriler","firmalar":"⚙️ Firmalar"};
-  const navCnt={"dashboard":0,"sehirlerarasi":S.saGecmis.length,"parsiyel":S.pGecmis.length,"musteriler":S.musteriler.length,"firmalar":S.firmalar.length};
-  let navH="";
-  nav.forEach(t=>{
-    const b=navCnt[t]>0?`<span class="nbadge">${navCnt[t]}</span>`:"";
-    navH+=`<button class="nav-btn${S.tab===t?" active":""}" onclick="ST('${t}')">${navLbls[t]}${b}</button>`;
-  });
-  const tst=S.toast?`<div class="msg ${S.toast.ok?"msg-ok":"msg-err"}">${S.toast.text}</div>`:"";
-  let body="";
-  if(S.loading)body=`<div class="loading"><div class="spinner"></div><p>Yukleniyor...</p></div>`;
-  else if(S.tab==="dashboard")body=rDashboard();
-  else if(S.tab==="sehirlerarasi")body=rSA();
-  else if(S.tab==="parsiyel")body=rP();
-  else if(S.tab==="musteriler")body=rMusteriler();
-  else body=rFirmalar();
-  document.getElementById("app").innerHTML=
-    `<div class="header"><div class="logo"><div class="logo-icon">🚚</div><div><div class="logo-title">SEVKIYAT</div><div class="logo-sub">YONETIM SISTEMI</div></div></div><div class="kalkis-badge">● Kalkis: <strong>Yalova</strong></div></div>`+
-    `<nav class="nav">${navH}</nav>${tst}<div class="content">${body}</div>`;
-}
-
-// ── SEHIRLER ARASI ──
-function rSA(){
-  const at=S.at.sa;
-  const bb=S.sa_bekleme.length?`<span class="bbadge">${S.sa_bekleme.length}</span>`:"";
-  return `<div class="atbar">
-    <button class="at${at==="yeni"?" active":""}" onclick="SAT('yeni')">+ Yeni Sevkiyat</button>
-    <button class="at${at==="plaka"?" active":""}" onclick="SAT('plaka')">🚘 Plaka Bekleme${bb}</button>
-    <button class="at${at==="gecmis"?" active":""}" onclick="SAT('gecmis')">Gecmis (${S.saGecmis.length})</button>
-  </div>${at==="yeni"?rSAYeni():at==="plaka"?rSAPlaka():rSAGecmis()}`;
-}
-
-function rSAYeni(){
-  const il=S.sa_il?ILLER.find(x=>x.ad===S.sa_il):null;
-  const ilceler=il?il.ilceler:[];
-  const key=S.sa_il&&S.sa_ilce?S.sa_il+"__"+S.sa_ilce:null;
-  const kars=key?S.firmalar.filter(f=>f.fiyatlar&&f.fiyatlar[key]!==undefined).map(f=>({firma:f,fiyat:f.fiyatlar[key]})).sort((a,b)=>a.fiyat-b.fiyat):[];
-  const ton=parseFloat(S.sa_tonaj)||0;
-
-  let ilOpts=`<option value="">— Il secin —</option>`;
-  ILLER.forEach(x=>{ ilOpts+=`<option value="${x.ad}"${S.sa_il===x.ad?" selected":""}>${x.ad}</option>`; });
-  let ilceOpts=`<option value="">— Ilce secin —</option>`;
-  ilceler.forEach(x=>{ ilceOpts+=`<option value="${x}"${S.sa_ilce===x?" selected":""}>${x}</option>`; });
-
-  let onizHTML=`<div class="sub" style="text-align:center;padding:8px">Tonaj girin → arac tipi hesaplanir</div>`;
-  if(ton>0){
-    const araclar=tonajiBol(ton);onizHTML="";
-    araclar.forEach((a,i)=>{
-      const pct=Math.round((a.yukTon/a.max)*100);
-      onizHTML+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="display:flex;align-items:center;gap:8px"><span style="color:#64748b;font-size:12px">${i+1}.</span>${ab(a)}</div><span style="color:${a.renk};font-weight:700;font-size:14px">${a.yukTon.toFixed(1)} / ${a.max} ton</span></div>${pb(pct,a.renk)}`;
-    });
-    onizHTML+=`<div class="sub" style="margin-top:4px">Toplam ${ton.toFixed(1)} ton → ${araclar.length} arac</div>`;
-  }
-
-  let sagHTML="";
-  if(!S.sa_ilce){
-    sagHTML=`<div class="empty">🚛<br>Varis noktasi secin<br><small>Fiyat karsilastirmasi burada gorunecek</small></div>`;
-  } else if(!kars.length){
-    sagHTML=`<div class="empty">⚠️<br><strong>${S.sa_il} / ${S.sa_ilce}</strong><br><small>Bu guzergah icin fiyat bulunamadi</small></div>`;
-  } else {
-    sagHTML=`<div class="sub mb">${S.sa_il} / ${S.sa_ilce} icin <strong>${kars.length}</strong> firma</div>`;
-    kars.forEach(({firma,fiyat},idx)=>{
-      const top=idx===0,sel=S.sa_firma&&S.sa_firma.id===firma.id;
-      sagHTML+=`<div class="fcard${top?" top":""}${sel?" sel":""}" onclick="SAFT('${firma.id}')">
-        <div class="fleft"><div class="fno${top?" top":""}">${idx+1}</div>
-        <div><div class="fad">${firma.ad}${top?" ⭐":""}</div>${firma.iletisim?`<div class="sub">📞 ${firma.iletisim}</div>`:""}</div></div>
-        <div class="fright"><div class="fiyat${top?" ok":""}">${fiyat.toLocaleString("tr-TR")} ₺</div>${idx>0?`<div class="fark">+${(fiyat-kars[0].fiyat).toLocaleString("tr-TR")} ₺</div>`:""}</div>
-      </div>`;
-    });
-    if(S.sa_firma) sagHTML+=`<button class="btnp mt" onclick="SAPGonder()" ${S.saving?"disabled":""}>🚘 Plaka Girisine Gonder</button>`;
-  }
-
-  return `<div class="grid2">
-    <div>
-      <div class="card mb"><div class="flbl">KALKIS NOKTASI</div><div class="krow"><span style="font-size:22px">📍</span><div><div class="il-title">Yalova</div><div class="sub">Sabit kalkis noktasi</div></div></div></div>
-      <div class="field mb"><div class="flbl">MUSTERI / CARI</div>
-        <select onchange="SAMUS(this.value)">
-          <option value="">— Musteri secin (opsiyonel) —</option>
-          ${S.musteriler.map(m=>`<option value="${m.ad}"${S.sa_musteri===m.ad?" selected":""}>${m.ad}${m.il?" — "+m.il+(m.ilce?" / "+m.ilce:""):""}</option>`).join("")}
-        </select>
-      </div>
-      <div class="field mb"><div class="flbl">VARIS ILI</div><select onchange="SAIL(this.value)">${ilOpts}</select></div>
-      <div class="field mb"><div class="flbl">VARIS ILCESI</div><select ${S.sa_il?"":"disabled"} onchange="SAILCE(this.value)">${ilceOpts}</select></div>
-      <div class="field mb"><div class="flbl">YUKUN TONAJI</div>
-        <input id="sa_ton" type="number" min="0.1" step="0.1" placeholder="Toplam ton girin..." value="${S.sa_tonaj}" oninput="SATON(this.value)" style="width:100%;margin-bottom:10px"/>
-        <div id="sa-oniz">${onizHTML}</div>
-      </div>
-    </div>
-    <div>${sagHTML}</div>
-  </div>`;
-}
-
-function rSAPlaka(){
-  if(!S.sa_bekleme.length)return`<div class="empty">🚘<br>Bekleyen sevkiyat yok<br><small>Yeni Sevkiyat sekmesinden olusturun</small></div>`;
-  let h=`<div class="glist">`;
-  S.sa_bekleme.forEach((b,bi)=>{
-    // Müşteri kaydından sevk adresi bul
-    const musteriRec=b.musteri?S.musteriler.find(m=>m.ad===b.musteri):null;
-    const sevkAdresi=musteriRec?.sevk_adresi||"";
-    h+=`<div class="pplan">
-      <div class="pplanhdr">
-        <div style="flex:1;min-width:0">
-          <div class="grota">Yalova → ${b.il} / ${b.ilce}</div>
-          <div class="sub" style="margin-top:3px">🚚 ${b.firma.ad}${b.firma.iletisim?" · 📞 "+b.firma.iletisim:""} · ${b.fiyat.toLocaleString("tr-TR")} ₺</div>
-          <div class="sub">${b.toplamTon.toFixed(1)} ton · ${b.araclar.length} arac</div>
-        </div>
-        <button class="btns" onclick="SABS(${bi})">🗑️</button>
-      </div>
-      ${b.musteri?`<div class="cari-box">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <span style="color:#8B5CF6;font-weight:700;font-size:14px">🏢 ${b.musteri}</span>
-          ${sevkAdresi?`<span style="color:#94a3b8;font-size:12px">📌 ${sevkAdresi}</span>`:""}
-        </div>
-        ${musteriRec&&(musteriRec.il||musteriRec.ilce)?`<div class="sub" style="margin-top:2px">📍 ${[musteriRec.il,musteriRec.ilce].filter(Boolean).join(" / ")}</div>`:""}
-      </div>`:""}`;
-    b.araclar.forEach((a,ai)=>{
-      const pct=Math.round((a.yukTon/a.max)*100);
-      const plakaTamam=(a.plaka||"").trim().length>=3;
-      h+=`<div class="pacrd" style="border-left:3px solid ${a.renk}">
-        <div class="pahdr">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${ab(a)}<span style="color:white;font-weight:600">${a.no}. Arac</span><span class="sub">${a.yukTon.toFixed(1)} / ${a.max} ton · ${pct}% dolu</span></div>
-          ${piInput(`sap-${bi}-${ai}`,a.plaka,`SAP(${bi},${ai},this.value)`)}
-        </div>
-        ${pb(pct,a.renk)}${guzSA(b.ilce,b.il,a.renk)}
-        ${acBox(`saa-${bi}-${ai}`,a.aciklama,`SAA(${bi},${ai},this.value)`)}
-        <button class="btnp mt" id="sabtn-${bi}-${ai}" onclick="SAPK(${bi},${ai})" ${!plakaTamam||S.saving?"disabled":""}>${S.saving?"Kaydediliyor...":plakaTamam?"💾 Bu Araci Kaydet":"Plaka Girin"}</button>
-      </div>`;
-    });
-    h+=`</div>`;
-  });
-  return h+"</div>";
-}
-
-function rSAGecmis(){
-  if(!S.saGecmis.length)return`<div class="empty">📋<br>Henuz sevkiyat kaydi yok</div>`;
-  let h=`<div class="glist">`;
-  S.saGecmis.forEach(s=>{
-    const araclar=s.araclar||[];const top=s.toplam_ton||s.tonaj||0;
-    const durum=s.durum||"Planlandı";
-    const durumCfg={
-      "Planlandı":  {cls:"d-plan",  lbl:"📋 Planlandı"},
-      "Yüklendi":   {cls:"d-yukle", lbl:"📦 Yuklendi"},
-      "Yolda":      {cls:"d-yolda", lbl:"🚛 Yolda"},
-      "Teslim Edildi":{cls:"d-teslim",lbl:"✅ Teslim Edildi"},
-      "İptal":      {cls:"d-iptal", lbl:"❌ Iptal"}
-    };
-    const dc=durumCfg[durum]||durumCfg["Planlandı"];
-    h+=`<div class="gdcrd"><div class="gdhdr"><div>
-      <div class="grota">Yalova → ${s.varis_il} / ${s.varis_ilce}</div>
-      <div class="sub">${s.firma_ad} · ${fmtTarih(s.tarih)}</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap">
-        ${s.musteri?`<span class="mbadge">👤 ${s.musteri}</span>`:""}
-        <span class="sub">${top.toFixed(1)} ton · ${araclar.length||1} arac</span>
-      </div>
-    </div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="fiyat ok" style="font-size:18px">${(s.fiyat||0).toLocaleString("tr-TR")} ₺</div>
-        <button class="btns" onclick="SASil('${s.id}')">🗑️</button>
-      </div>
-      <select class="dsel ${dc.cls}" onchange="SADurum('${s.id}',this.value)">
-        ${["Planlandı","Yüklendi","Yolda","Teslim Edildi","İptal"].map(d=>`<option value="${d}"${durum===d?" selected":""}>${(durumCfg[d]||{lbl:d}).lbl}</option>`).join("")}
-      </select>
-    </div></div>`;
-    if(araclar.length){
-      araclar.forEach(a=>{
-        const pct=Math.round(((a.yukTon||0)/a.max)*100);
-        h+=`<div class="gacrd" style="border-left:3px solid ${a.renk}"><div class="gahdr">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${ab(a)}<span style="color:white;font-weight:600">${a.no}. Arac</span>${a.plaka?`<span class="pbadge">🚘 ${a.plaka}`+"</span>":""}</div>
-          <div style="text-align:right"><div style="color:${a.renk};font-weight:700">${(a.yukTon||0).toFixed(1)} / ${a.max} ton</div><div class="sub">${pct}% dolu</div></div>
-        </div>${pb(pct,a.renk)}${guzSA(s.varis_ilce,s.varis_il,a.renk)}${a.aciklama?`<div class="acg">💬 ${a.aciklama}</div>`:""}</div>`;
-      });
-    } else {
-      h+=`<div class="gacrd" style="border-left:3px solid #64748b"><div class="sub">${top.toFixed(1)} ton</div></div>`;
-    }
-    h+="</div>";
-  });
-  return h+"</div>";
-}
-
-// ── PARSIYEL ──
-function rP(){
-  const at=S.at.p;
-  const bb=S.p_bekleme.length?`<span class="bbadge">${S.p_bekleme.length}</span>`:"";
-  return `<div class="atbar">
-    <button class="at${at==="yeni"?" active":""}" onclick="PT('yeni')">+ Yeni Plan</button>
-    <button class="at${at==="plaka"?" active":""}" onclick="PT('plaka')">🚘 Plaka Bekleme${bb}</button>
-    <button class="at${at==="gecmis"?" active":""}" onclick="PT('gecmis')">Gecmis (${S.pGecmis.length})</button>
-  </div>${at==="yeni"?rPYeni():at==="plaka"?rPPlaka():rPGecmis()}`;
-}
-
-function rPYeni(){
-  const PI=S.p_il?(PARSIYEL[S.p_il]||{ilceler:[]}).ilceler.filter(i=>!S.p_sec.find(s=>s.ilce.ad===i.ad)):[];
-  const km=S.p_sec.length?grupla(S.p_sec):[];
-  const top=S.p_sec.reduce((a,b)=>a+b.tonaj,0);
-  let ilOpts=`<option value="">— Il secin —</option>`;
-  Object.keys(PARSIYEL).forEach(il=>{ ilOpts+=`<option value="${il}"${S.p_il===il?" selected":""}>${il}</option>`; });
-  let ilceOpts=`<option value="">— Ilce secin —</option>`;
-  PI.forEach(i=>{ ilceOpts+=`<option value="${i.ad}"${S.p_ilce===i.ad?" selected":""}>${i.ad}</option>`; });
-
-  let secH="";
-  if(S.p_sec.length){
-    secH=`<div class="shdr"><span class="sub">${S.p_sec.length} nokta · Toplam <strong>${top.toFixed(1)} ton</strong></span><button class="btnl" onclick="PTemizle()">Tumunu sil</button></div>`;
-    S.p_sec.forEach(item=>{
-      const rk=(PARSIYEL[item.ilce.il]||{renk:"#888"}).renk;
-      secH+=`<div class="sitem"><div class="sdot" style="background:${rk}"></div><span class="sad">${item.ilce.ad}</span><span class="sub">${item.ilce.il}</span><span class="ston">${item.tonaj} ton</span><button class="btnl" onclick="PCikar('${item.ilce.ad}')">✕</button></div>`;
-    });
-  }
-
-  let sagH="";
-  if(!S.p_sec.length){
-    sagH=`<div class="empty">📦<br>Varis noktalari ekleyin<br><small>Kamyonet ≤10t · Kamyon ≤19t · TIR ≤24t</small></div>`;
-  } else {
-    sagH=`<div class="sub mb">${top.toFixed(1)} ton icin <strong>${km.length} arac</strong> hesaplandi</div>`;
-    km.forEach(k=>{
-      const pct=Math.round((k.toplamTon/k.maxTon)*100);
-      sagH+=`<div class="kcrd" style="border-left:4px solid ${k.renk}">
-        <div class="khdr">
-          <div style="display:flex;align-items:center;gap:10px">${ab(k)}<span class="sub">${k.no}. arac · ${k.noktalar.length} durak</span></div>
-          <div style="text-align:right"><div style="color:${k.renk};font-weight:700">${k.toplamTon.toFixed(1)} / ${k.maxTon} ton</div><div style="color:#64748b;font-size:11px">${pct}% dolu</div></div>
-        </div>${pb(pct,k.renk)}${guzP(k)}</div>`;
-    });
-    sagH+=`<button class="btnp mt" onclick="PPGonder()" ${S.saving?"disabled":""}>🚘 Plaka Girisine Gonder</button>`;
-  }
-
-  return `<div class="grid2">
-    <div>
-      <div class="card mb"><div class="flbl">VARIS NOKTASI EKLE</div>
-        <select class="mb-sm" onchange="PIL(this.value)">${ilOpts}</select>
-        <select class="mb-sm" ${S.p_il?"":"disabled"} onchange="PILCE(this.value)">${ilceOpts}</select>
-        <div class="irow"><input id="p_ton" type="number" min="0.1" max="24" step="0.1" placeholder="Tonaj (ton)"/><button class="btna" onclick="PEkle()">+ Ekle</button></div>
-      </div>
-      ${secH}
-    </div>
-    <div>${sagH}</div>
-  </div>`;
-}
-
-function rPPlaka(){
-  if(!S.p_bekleme.length)return`<div class="empty">🚘<br>Bekleyen plan yok<br><small>Yeni Plan sekmesinden olusturun</small></div>`;
-  let h=`<div class="glist">`;
-  S.p_bekleme.forEach((plan,pi)=>{
-    const musteriRec=plan.musteri?S.musteriler.find(m=>m.ad===plan.musteri):null;
-    const sevkAdresi=musteriRec?.sevk_adresi||"";
-    h+=`<div class="pplan">
-      <div class="pplanhdr">
-        <div style="flex:1;min-width:0">
-          <div class="grota">Plan #${pi+1} — ${plan.kamyonlar.length} Arac · ${plan.toplam_ilce} Nokta · ${plan.toplam_ton.toFixed(1)} ton</div>
-          <div class="sub" style="margin-top:3px">Her arac icin plaka girip ayri ayri kaydedin</div>
-        </div>
-        <button class="btns" onclick="PBS(${pi})">🗑️</button>
-      </div>
-      ${plan.musteri?`<div class="cari-box">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <span style="color:#8B5CF6;font-weight:700;font-size:14px">🏢 ${plan.musteri}</span>
-          ${sevkAdresi?`<span style="color:#94a3b8;font-size:12px">📌 ${sevkAdresi}</span>`:""}
-        </div>
-        ${musteriRec&&(musteriRec.il||musteriRec.ilce)?`<div class="sub" style="margin-top:2px">📍 ${[musteriRec.il,musteriRec.ilce].filter(Boolean).join(" / ")}</div>`:""}
-      </div>`:""}`;
-    plan.kamyonlar.forEach(k=>{
-      const pct=Math.round((k.toplamTon/k.maxTon)*100);
-      const plakaTamam=(k.plaka||"").trim().length>=3;
-      h+=`<div class="pacrd" style="border-left:3px solid ${k.renk}">
-        <div class="pahdr">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${ab(k)}<span style="color:white;font-weight:600">${k.no}. Arac</span><span class="sub">${k.noktalar.length} durak · ${k.toplamTon.toFixed(1)}/${k.maxTon}t · %${pct}</span></div>
-          ${piInput(`pp-${pi}-${k.no}`,k.plaka,`PP(${pi},${k.no},this.value)`)}
-        </div>
-        ${pb(pct,k.renk)}${guzP(k)}
-        ${acBox(`pa-${pi}-${k.no}`,k.aciklama,`PA(${pi},${k.no},this.value)`)}
-        <button class="btnp mt" id="pbtn-${pi}-${k.no}" onclick="PPK(${pi},${k.no})" ${!plakaTamam||S.saving?"disabled":""}>${S.saving?"Kaydediliyor...":plakaTamam?"💾 Bu Araci Kaydet":"Plaka Girin"}</button>
-      </div>`;
-    });
-    h+=`</div>`;
-  });
-  return h+"</div>";
-}
-
-function rPGecmis(){
-  if(!S.pGecmis.length)return`<div class="empty">📋<br>Henuz parsiyel plan kaydi yok</div>`;
-  let h=`<div class="glist">`;
-  S.pGecmis.forEach(p=>{
-    h+=`<div class="gdcrd"><div class="gdhdr"><div>
-      <div class="grota">${p.kamyon_sayisi||0} Arac · ${p.toplam_ilce||0} Nokta · ${(p.toplam_ton||0).toFixed(1)} ton</div>
-      <div class="sub">${fmtTarih(p.tarih)}</div>
-    </div><button class="btns" onclick="PSil('${p.id}')">🗑️</button></div>`;
-    (p.kamyonlar||[]).forEach(k=>{
-      const a=aracTipi(k.toplam_ton||0);const pct=Math.round(((k.toplam_ton||0)/(k.max_ton||24))*100);
-      const fk={renk:a.renk,noktalar:(k.noktalar||[]).map(n=>({ilce:{ad:n.ilce||n,il:n.il||""},tonaj:n.tonaj||0}))};
-      h+=`<div class="gacrd" style="border-left:3px solid ${a.renk}"><div class="gahdr">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${ab(a)}<span style="color:white;font-weight:600">${k.no}. Arac</span>${k.plaka?`<span class="pbadge">🚘 ${k.plaka}`+"</span>":""}</div>
-        <div style="text-align:right"><div style="color:${a.renk};font-weight:700">${(k.toplam_ton||0).toFixed(1)} / ${k.max_ton||24} ton</div><div class="sub">${pct}% dolu</div></div>
-      </div>${pb(pct,a.renk)}${guzP(fk)}${k.aciklama?`<div class="acg">💬 ${k.aciklama}</div>`:""}</div>`;
-    });
-    h+="</div>";
-  });
-  return h+"</div>";
-}
-
-// ── FIRMA YONETIMI ──
-function rFirmalar(){
-  let fH="";
-  if(!S.firmalar.length)fH=`<div class="empty">🏢<br>Henuz firma kaydi yok<br><small>Excel yukleyerek baslayin</small></div>`;
-  S.firmalar.forEach(f=>{
-    fH+=`<div class="gcrd"><div class="gleft"><div class="grota">🏢 ${f.ad}</div>${f.iletisim?`<div class="sub">📞 ${f.iletisim}</div>`:""}<div class="sub">${Object.keys(f.fiyatlar||{}).length} destinasyon fiyati</div></div><button class="btns" onclick="FKaldir('${f.id}')">🗑️</button></div>`;
-  });
-  return `<div><div class="card mb"><div class="flbl">EXCEL DOSYASI YUKLE</div>
-    <div class="uarea" onclick="document.getElementById('xlsxInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="DragDrop(event)">
-      <input type="file" id="xlsxInput" accept=".xlsx,.xls" style="display:none" onchange="ExcelYukle(this)"/>
-      <div class="uicon">📊</div><div>Excel dosyasini <strong>surukle & birak</strong> ya da tikla</div>
-      <div class="sub">.xlsx veya .xls · Firma Adi, Il, Ilce, Fiyat sutunlari</div>
-    </div>
-    <button class="btno mt" onclick="OrnekIndir()">⬇️ Ornek Excel Sablonu Indir</button></div>
-    <div><div class="flbl mb-sm">KAYITLI FIRMALAR (${S.firmalar.length})</div>${fH}</div></div>`;
-}
-
-// ── GLOBAL HANDLERS ──
-// ── DASHBOARD ──
-function rDashboard(){
-  const sa=S.saGecmis,p=S.pGecmis;
-  const buAy=new Date();buAy.setDate(1);buAy.setHours(0,0,0,0);
-  const saAy=sa.filter(s=>s.tarih&&(s.tarih.toDate?s.tarih.toDate():new Date(s.tarih))>=buAy);
-  const toplamFiyat=sa.reduce((a,s)=>a+(s.fiyat||0),0);
-  const toplamTon=sa.reduce((a,s)=>a+(s.toplam_ton||s.tonaj||0),0);
-  const toplamPTon=p.reduce((a,x)=>a+(x.toplam_ton||0),0);
-  const durumSay={};sa.forEach(s=>{const d=s.durum||"Planlandı";durumSay[d]=(durumSay[d]||0)+1;});
-  const firmaMap={};sa.forEach(s=>{if(!s.firma_ad)return;if(!firmaMap[s.firma_ad])firmaMap[s.firma_ad]={ad:s.firma_ad,sayi:0,toplam:0};firmaMap[s.firma_ad].sayi++;firmaMap[s.firma_ad].toplam+=(s.fiyat||0);});
-  const firmaList=Object.values(firmaMap).sort((a,b)=>b.sayi-a.sayi).slice(0,5);
-  const musteriMap={};sa.forEach(s=>{if(!s.musteri)return;if(!musteriMap[s.musteri])musteriMap[s.musteri]={ad:s.musteri,sayi:0,toplam:0};musteriMap[s.musteri].sayi++;musteriMap[s.musteri].toplam+=(s.fiyat||0);});
-  const musteriList=Object.values(musteriMap).sort((a,b)=>b.toplam-a.toplam).slice(0,5);
-  const ayMap={};for(let i=5;i>=0;i--){const d=new Date();d.setMonth(d.getMonth()-i);const k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");ayMap[k]=0;}
-  sa.forEach(s=>{if(!s.tarih)return;const d=s.tarih.toDate?s.tarih.toDate():new Date(s.tarih);const k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");if(ayMap[k]!==undefined)ayMap[k]+=(s.fiyat||0);});
-  const aylar=Object.entries(ayMap);const maxAy=Math.max(...aylar.map(a=>a[1]),1);
-  const durumRenkler={"Planlandı":"#64748b","Yüklendi":"#3B82F6","Yolda":"#F59E0B","Teslim Edildi":"#10B981","İptal":"#EF4444"};
-  const kartlar=[
-    {lbl:"Toplam Sevkiyat",val:sa.length,sub:"tum zamanlar",ic:"🛣️",renk:"#3B82F6"},
-    {lbl:"Bu Ay Sevkiyat",val:saAy.length,sub:"bu ay",ic:"📅",renk:"#F59E0B"},
-    {lbl:"Toplam Harcama",val:toplamFiyat.toLocaleString("tr-TR")+" ₺",sub:"sehirler arasi",ic:"💰",renk:"#10B981"},
-    {lbl:"Toplam Yuk",val:(toplamTon+toplamPTon).toFixed(1)+" ton",sub:"SA + Parsiyel",ic:"📦",renk:"#8B5CF6"},
-  ];
-  let h=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px">`;
-  kartlar.forEach(c=>{h+=`<div class="dcard"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="flbl">${c.lbl}</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:white;margin-top:4px">${c.val}</div><div class="sub">${c.sub}</div></div><div style="font-size:28px">${c.ic}</div></div></div>`;});
-  h+="</div>";
-  h+=`<div class="grid2" style="margin-bottom:24px">`;
-  // Aylık trend
-  h+=`<div class="card"><div class="flbl" style="margin-bottom:14px">AYLIK HARCAMA TRENDI (Son 6 Ay)</div><div style="display:flex;align-items:flex-end;gap:6px;height:120px">`;
-  aylar.forEach(([ay,val])=>{
-    const pct=Math.round((val/maxAy)*100);
-    const tarih=new Date(ay+"-01");const ayAd=tarih.toLocaleString("tr-TR",{month:"short"});
-    h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-size:10px;color:#64748b">${val>0?Math.round(val/1000)+"K":""}</div><div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:${Math.max(pct,4)}%;background:${pct>0?"#F59E0B":"#1E2D47"};border-radius:4px 4px 0 0"></div></div><div style="font-size:10px;color:#94a3b8">${ayAd}</div></div>`;
-  });
-  h+=`</div></div>`;
-  // Durum dağılımı
-  h+=`<div class="card"><div class="flbl" style="margin-bottom:14px">SEVKIYAT DURUM DAGILIMI</div>`;
-  Object.keys(durumRenkler).forEach(d=>{
-    const sayi=durumSay[d]||0;const pct=sa.length>0?Math.round((sayi/sa.length)*100):0;
-    h+=`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;color:${durumRenkler[d]}">${d}</span><span style="font-size:12px;color:#64748b">${sayi} (${pct}%)</span></div><div class="pbar"><div class="pfill" style="width:${pct}%;background:${durumRenkler[d]}"></div></div></div>`;
-  });
-  h+=`</div></div>`;
-  // Firma + Müşteri
-  h+=`<div class="grid2">`;
-  h+=`<div class="card"><div class="flbl" style="margin-bottom:14px">FIRMA PERFORMANSI</div>`;
-  if(!firmaList.length)h+=`<div class="empty" style="padding:20px">Henuz veri yok</div>`;
-  firmaList.forEach((f,i)=>{h+=`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #1E2D47"><div style="width:24px;height:24px;border-radius:50%;background:#1E2D47;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#F59E0B;flex-shrink:0">${i+1}</div><div style="flex:1;min-width:0"><div style="color:white;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.ad}</div><div class="sub">${f.sayi} sevkiyat</div></div><div style="text-align:right;flex-shrink:0"><div style="color:#10B981;font-weight:700;font-size:14px">${f.toplam.toLocaleString("tr-TR")} ₺</div></div></div>`;});
-  h+=`</div>`;
-  h+=`<div class="card"><div class="flbl" style="margin-bottom:14px">MUSTERI ANALIZI</div>`;
-  if(!musteriList.length)h+=`<div class="empty" style="padding:20px">Musteri atanmis sevkiyat yok</div>`;
-  musteriList.forEach((m,i)=>{h+=`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #1E2D47"><div style="width:24px;height:24px;border-radius:50%;background:#1E2D47;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#8B5CF6;flex-shrink:0">${i+1}</div><div style="flex:1;min-width:0"><div style="color:white;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.ad}</div><div class="sub">${m.sayi} sevkiyat</div></div><div style="text-align:right;flex-shrink:0"><div style="color:#8B5CF6;font-weight:700;font-size:14px">${m.toplam.toLocaleString("tr-TR")} ₺</div></div></div>`;});
-  h+=`</div></div>`;
-  h+=`<div style="margin-top:20px;text-align:right"><button class="btno" onclick="ExcelRapor()">📥 Tum Sevkiyatlari Excel Olarak Indir</button></div>`;
-  return h;
-}
-
-// ── MUSTERILER ──
-function rMusteriler(){
-  const ilOpts=ILLER.map(il=>`<option value="${il.ad}">${il.ad}</option>`).join("");
-  const secilenIl=S._mIl||"";
-  const ilceler=secilenIl?(ILLER.find(x=>x.ad===secilenIl)||{ilceler:[]}).ilceler:[];
-  const ilceOpts=ilceler.map(i=>`<option value="${i}">${i}</option>`).join("");
-
-  return `<div>
-    <!-- Excel Yükleme -->
-    <div class="card mb">
-      <div class="flbl">EXCEL ILE TOPLU YUKLE</div>
-      <div class="uarea" onclick="document.getElementById('musXlsx').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="MusteriDrop(event)" style="padding:20px">
-        <input type="file" id="musXlsx" accept=".xlsx,.xls" style="display:none" onchange="MusteriExcel(this)"/>
-        <div class="uicon" style="font-size:28px;margin-bottom:6px">📊</div>
-        <div>Excel dosyasini <strong>surukle & birak</strong> ya da tikla</div>
-        <div class="sub" style="margin-top:4px">4 sutun: <strong>Firma</strong> · <strong>Sevk Adresi</strong> · <strong>Il</strong> · <strong>Ilce</strong></div>
-      </div>
-      <button class="btno mt" onclick="MusteriOrnekIndir()">⬇️ Ornek Excel Sablonu Indir</button>
-    </div>
-
-    <!-- Manuel Ekleme -->
-    <div class="card mb">
-      <div class="flbl">MANUEL EKLE</div>
-      <div style="display:grid;grid-template-columns:1.5fr 2fr 1fr 1fr auto;gap:8px;align-items:center">
-        <input id="mus_ad" type="text" placeholder="Firma adi" onkeydown="if(event.key==='Enter')MusteriEkle()"/>
-        <input id="mus_adres" type="text" placeholder="Sevk adresi" onkeydown="if(event.key==='Enter')MusteriEkle()"/>
-        <select id="mus_il" onchange="MIL(this.value)" style="width:100%">
-          <option value="">— Il —</option>${ilOpts}
-        </select>
-        <select id="mus_ilce" ${secilenIl?"":"disabled"} style="width:100%">
-          <option value="">— Ilce —</option>${ilceOpts}
-        </select>
-        <button class="btna" onclick="MusteriEkle()" style="white-space:nowrap">+ Ekle</button>
-      </div>
-    </div>
-
-    <!-- Liste -->
-    <div class="flbl mb-sm">KAYITLI MUSTERILER (${S.musteriler.length})</div>
-    ${S.musteriler.length===0?`<div class="empty">🏢<br>Henuz musteri kaydi yok<br><small>Excel yukleyin veya manuel ekleyin</small></div>`:""}
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">
-      ${S.musteriler.map(m=>{
-        const mSev=S.saGecmis.filter(s=>s.musteri===m.ad);
-        const mTop=mSev.reduce((a,s)=>a+(s.fiyat||0),0);
-        return `<div class="mus-card">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start">
-            <div style="min-width:0;flex:1">
-              <div class="grota" style="font-size:15px">🏢 ${m.ad}</div>
-              ${m.sevk_adresi?`<div style="font-size:12px;color:#94a3b8;margin-top:3px">📌 ${m.sevk_adresi}</div>`:""}
-              ${(m.il||m.ilce)?`<div class="sub" style="margin-top:2px">📍 ${[m.il,m.ilce].filter(Boolean).join(" / ")}</div>`:""}
-            </div>
-            <button class="btns" onclick="MusteriSil('${m.id}')">🗑️</button>
-          </div>
-          <div style="display:flex;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid #1E2D47">
-            <div style="text-align:center;flex:1">
-              <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:white">${mSev.length}</div>
-              <div class="sub">sevkiyat</div>
-            </div>
-            <div style="width:1px;background:#1E2D47"></div>
-            <div style="text-align:center;flex:2">
-              <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:#10B981">${mTop.toLocaleString("tr-TR")} ₺</div>
-              <div class="sub">toplam harcama</div>
-            </div>
-          </div>
-          ${mSev.length>0?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px">${mSev.slice(0,3).map(s=>`<span style="background:#1E2D47;color:#94a3b8;border-radius:4px;padding:2px 8px;font-size:11px">→ ${s.varis_il}/${s.varis_ilce}</span>`).join("")}${mSev.length>3?`<span class="sub"> +${mSev.length-3}</span>`:""}</div>`:""}
-        </div>`;
-      }).join("")}
-    </div>
-  </div>`;
-}
-
-window.ST=t=>{S.tab=t;render();};
-window.SAT=t=>{S.at.sa=t;render();};
-window.PT=t=>{S.at.p=t;render();};
-window.SAIL=v=>{S.sa_il=v;S.sa_ilce="";S.sa_firma=null;render();};
-window.SAILCE=v=>{S.sa_ilce=v;S.sa_firma=null;render();};
-window.SATON=v=>{
-  S.sa_tonaj=v;
-  const ton=parseFloat(v)||0,el=document.getElementById("sa-oniz");
-  if(!el)return;
-  if(ton<=0){el.innerHTML=`<div class="sub" style="text-align:center;padding:8px">Tonaj girin → arac tipi hesaplanir</div>`;return;}
-  const al=tonajiBol(ton);let h="";
-  al.forEach((a,i)=>{const pct=Math.round((a.yukTon/a.max)*100);h+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="display:flex;align-items:center;gap:8px"><span style="color:#64748b;font-size:12px">${i+1}.</span>${ab(a)}</div><span style="color:${a.renk};font-weight:700;font-size:14px">${a.yukTon.toFixed(1)} / ${a.max} ton</span></div>${pb(pct,a.renk)}`;});
-  h+=`<div class="sub" style="margin-top:4px">Toplam ${ton.toFixed(1)} ton → ${al.length} arac</div>`;
-  el.innerHTML=h;
-};
-window.SAFT=id=>{const f=S.firmalar.find(x=>x.id===id);S.sa_firma=S.sa_firma&&S.sa_firma.id===id?null:f;render();};
-window.SAPGonder=()=>{
-  if(!S.sa_firma||!S.sa_il||!S.sa_ilce)return;
-  const inp=document.getElementById("sa_ton");const ton=parseFloat(inp?inp.value:S.sa_tonaj)||0;
-  if(ton<=0){showToast("Lutfen tonaj girin!",false);return;}
-  S.sa_tonaj=String(ton);
-  const al=tonajiBol(ton).map((a,i)=>({...a,no:i+1,plaka:"",aciklama:""}));
-  const musteri=document.getElementById("sa_ton")?.closest(".grid2")?.querySelector("select")?.value||S.sa_musteri||"";
-  S.sa_bekleme.push({il:S.sa_il,ilce:S.sa_ilce,firma:S.sa_firma,fiyat:S.sa_firma.fiyatlar[S.sa_il+"__"+S.sa_ilce],toplamTon:ton,musteri:S.sa_musteri,araclar:al});
-  S.sa_il="";S.sa_ilce="";S.sa_firma=null;S.sa_tonaj="";S.sa_musteri="";S.at.sa="plaka";render();
-};
-window.SAP=(bi,ai,val)=>{
-  S.sa_bekleme[bi].araclar[ai].plaka=val.toUpperCase();
-  const ok=val.trim().length>=3;
-  const inp=document.getElementById(`sap-${bi}-${ai}`);if(inp)inp.classList.toggle("ok",ok);
-  const chk=document.getElementById(`sap-${bi}-${ai}-c`);if(chk){chk.textContent=ok?"✓":"Plaka";chk.className=ok?"pchk":"preq";}
-  const btn=document.getElementById(`sabtn-${bi}-${ai}`);
-  if(btn){btn.disabled=!ok;btn.textContent=ok?"💾 Bu Araci Kaydet":"Plaka Girin";}
-};
-window.SAA=(bi,ai,val)=>{S.sa_bekleme[bi].araclar[ai].aciklama=val;};
-window.SAPK=async(bi,ai)=>{
-  const b=S.sa_bekleme[bi];if(!b)return;
-  const a=b.araclar[ai];if(!a)return;
-  S.saving=true;render();
-  try{
-    await saKaydet({kalkis:"Yalova",varis_il:b.il,varis_ilce:b.ilce,firma_ad:b.firma.ad,firma_iletisim:b.firma.iletisim||"",
-      fiyat:b.fiyat,toplam_ton:b.toplamTon,musteri:b.musteri||"",durum:"Planlandı",
-      araclar:[{no:a.no,tip:a.tip,icon:a.icon,renk:a.renk,max:a.max,yukTon:a.yukTon,plaka:a.plaka,aciklama:a.aciklama||""}]
-    });
-    // Bu aracı plandan çıkar
-    b.araclar.splice(ai,1);
-    // Planda araç kalmadıysa planı da kaldır
-    if(b.araclar.length===0) S.sa_bekleme.splice(bi,1);
-    S.saGecmis=await saGetir();
-    if(!S.sa_bekleme.length)S.at.sa="gecmis";
-    showToast("✅ Arac kaydedildi!");
-  }catch(e){showToast("❌ Hata: "+e.message,false);}finally{S.saving=false;render();}
-};
-window.SABS=bi=>{if(!confirm("Bu sevkiyati iptal etmek istediginize emin misiniz?"))return;S.sa_bekleme.splice(bi,1);render();};
-window.SASil=async id=>{if(!confirm("Bu kaydi silmek istediginize emin misiniz?"))return;await saSil2(id);S.saGecmis=await saGetir();render();};
-
-window.PIL=v=>{S.p_il=v;S.p_ilce="";render();};
-window.PMUS=v=>{S.p_musteri=v;};
-window.PILCE=v=>{S.p_ilce=v;render();};
-window.PEkle=()=>{
-  const inp=document.getElementById("p_ton");const ton=inp?parseFloat(inp.value):0;
-  if(!S.p_il||!S.p_ilce||!ton||ton<=0){showToast("Il, ilce ve tonaj secmelisiniz!",false);return;}
-  const ilce=(PARSIYEL[S.p_il]||{ilceler:[]}).ilceler.find(i=>i.ad===S.p_ilce);
-  if(!ilce){showToast("Ilce bulunamadi!",false);return;}
-  S.p_sec.push({ilce:{...ilce,il:S.p_il},tonaj:ton});S.p_ilce="";if(inp)inp.value="";render();
-};
-window.PCikar=ad=>{S.p_sec=S.p_sec.filter(s=>s.ilce.ad!==ad);render();};
-window.PTemizle=()=>{S.p_sec=[];render();};
-window.PPGonder=()=>{
-  const km=grupla(S.p_sec);if(!km.length)return;
-  const top=S.p_sec.reduce((a,b)=>a+b.tonaj,0);
-  S.p_bekleme.push({kamyonlar:km.map(k=>({...k,plaka:"",aciklama:""})),toplam_ton:top,toplam_ilce:S.p_sec.length,musteri:S.p_musteri});
-  S.p_sec=[];S.p_musteri="";S.at.p="plaka";render();
-};
-window.PP=(pi,kno,val)=>{
-  const k=S.p_bekleme[pi].kamyonlar.find(x=>x.no===kno);if(k)k.plaka=val.toUpperCase();
-  const ok=val.trim().length>=3;
-  const inp=document.getElementById(`pp-${pi}-${kno}`);if(inp)inp.classList.toggle("ok",ok);
-  const chk=document.getElementById(`pp-${pi}-${kno}-c`);if(chk){chk.textContent=ok?"✓":"Plaka";chk.className=ok?"pchk":"preq";}
-  const btn=document.getElementById(`pbtn-${pi}-${kno}`);
-  if(btn){btn.disabled=!ok;btn.textContent=ok?"💾 Bu Araci Kaydet":"Plaka Girin";}
-};
-window.PA=(pi,kno,val)=>{const k=S.p_bekleme[pi].kamyonlar.find(x=>x.no===kno);if(k)k.aciklama=val;};
-window.PPK=async(pi,kno)=>{
-  const plan=S.p_bekleme[pi];if(!plan)return;
-  const k=plan.kamyonlar.find(x=>x.no===kno);if(!k)return;
-  S.saving=true;render();
-  try{
-    await pKaydet({
-      toplam_ton:k.toplamTon,toplam_ilce:k.noktalar.length,kamyon_sayisi:1,
-      kamyonlar:[{no:k.no,tip:k.tip,icon:k.icon,renk:k.renk,toplam_ton:k.toplamTon,max_ton:k.maxTon,
-        plaka:k.plaka,aciklama:k.aciklama||"",
-        noktalar:k.noktalar.map(n=>({ilce:n.ilce.ad,il:n.ilce.il,tonaj:n.tonaj}))}]
-    });
-    // Bu kamyonu plandan çıkar
-    plan.kamyonlar=plan.kamyonlar.filter(x=>x.no!==kno);
-    // Planda kamyon kalmadıysa planı da kaldır
-    if(plan.kamyonlar.length===0) S.p_bekleme.splice(pi,1);
-    S.pGecmis=await pGetir();
-    if(!S.p_bekleme.length)S.at.p="gecmis";
-    showToast("✅ Arac kaydedildi!");
-  }catch(e){showToast("❌ Hata: "+e.message,false);}finally{S.saving=false;render();}
-};
-window.PBS=pi=>{if(!confirm("Bu plani iptal etmek istediginize emin misiniz?"))return;S.p_bekleme.splice(pi,1);render();};
-window.PSil=async id=>{if(!confirm("Bu plani silmek istediginize emin misiniz?"))return;await pSil2(id);S.pGecmis=await pGetir();render();};
-
-window.ExcelYukle=async input=>{
-  const file=input.files[0];if(!file)return;S.saving=true;render();
-  try{
-    const rows=await excelOku(file);if(!rows.length){S.saving=false;render();return;}
-    const firmalar=rowsToFirmalar(rows);
-    if(!firmalar.length){showToast("Gecerli veri bulunamadi.",false);S.saving=false;render();return;}
-    if(!confirm(firmalar.length+" firma, "+rows.length+" satir bulundu. Yuklensin mi?")){S.saving=false;render();return;}
-    await fKaydet(firmalar);S.firmalar=await fGetir();showToast("✅ "+firmalar.length+" firma yuklendi!");
-  }catch(e){showToast("❌ Hata: "+e.message,false);}finally{S.saving=false;render();}
-  input.value="";
-};
-window.DragDrop=async e=>{e.preventDefault();e.target.classList.remove("drag");const file=e.dataTransfer.files[0];if(!file)return;await ExcelYukle({files:[file]});};
-window.FKaldir=async id=>{if(!confirm("Bu firmay silmek istediginize emin misiniz?"))return;await fSil(id);S.firmalar=S.firmalar.filter(f=>f.id!==id);render();};
-window.OrnekIndir=()=>{
-  const wb=XLSX.utils.book_new();
-  const data=[["Firma Adi","Telefon","Varis Ili","Varis Ilcesi","Fiyat"],[" Hizli Nakliyat","0212 555 01 01","Istanbul","Kadikoy",1500],["Guveli Lojistik","0216 444 02 02","Istanbul","Kadikoy",1400]];
-  const ws=XLSX.utils.aoa_to_sheet(data);ws["!cols"]=[{wch:28},{wch:16},{wch:14},{wch:16},{wch:12}];
-  XLSX.utils.book_append_sheet(wb,ws,"Fiyat Listesi");XLSX.writeFile(wb,"ornek_fiyat_listesi.xlsx");
-};
-
-window.SAMUS=v=>{
-  S.sa_musteri=v;
-  if(v){
-    const m=S.musteriler.find(x=>x.ad===v);
-    if(m&&m.il){
-      S.sa_il=m.il;
-      S.sa_ilce=m.ilce||"";
-      S.sa_firma=null;
-    }
-  }
-  render();
-};
-window.SADurum=async(id,durum)=>{
-  try{
-    const {updateDoc}=await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-    await updateDoc(doc(db,"sehirlerarasi_sevkiyatlar",id),{durum});
-    const rec=S.saGecmis.find(s=>s.id===id);if(rec)rec.durum=durum;
-    showToast("✅ Durum guncellendi!");render();
-  }catch(e){showToast("❌ Hata: "+e.message,false);}
-};
-window.MIL=v=>{S._mIl=v;render();setTimeout(()=>{const el=document.getElementById("mus_il");if(el)el.value=v;},0);};
-window.MusteriEkle=async()=>{
-  const adInp=document.getElementById("mus_ad");
-  const adresInp=document.getElementById("mus_adres");
-  const ilInp=document.getElementById("mus_il");
-  const ilceInp=document.getElementById("mus_ilce");
-  const ad=(adInp?adInp.value:"").trim();
-  const sevk_adresi=(adresInp?adresInp.value:"").trim();
-  const il=ilInp?ilInp.value:"";
-  const ilce=ilceInp?ilceInp.value:"";
-  if(!ad){showToast("Firma adi girin!",false);return;}
-  if(S.musteriler.find(m=>m.ad===ad)){showToast("Bu musteri zaten kayitli!",false);return;}
-  try{
-    await musteriKaydet({ad,sevk_adresi,il,ilce});
-    S.musteriler=await musteriGetir();
-    S._mIl="";
-    showToast("✅ Musteri eklendi!");
-  }catch(e){showToast("❌ Hata: "+e.message,false);}
-  render();
-};
-window.MusteriSil=async id=>{
-  if(!confirm("Bu musteriyi silmek istediginize emin misiniz?"))return;
-  await musteriSil(id);S.musteriler=await musteriGetir();render();
-};
-window.MusteriExcel=async input=>{
-  const file=input.files[0];if(!file)return;
-  try{
-    const buf=await file.arrayBuffer();
-    const wb=XLSX.read(buf,{type:"array"});
-    const ws=wb.Sheets[wb.SheetNames[0]];
-    const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:""});
-    let headerRow=-1;
-    for(let i=0;i<Math.min(raw.length,10);i++){
-      const r=raw[i].map(c=>String(c).toLowerCase());
-      if(r.some(c=>c.includes("must")||c.includes("cari")||c.includes("firma")||c.includes("ad"))){headerRow=i;break;}
-    }
-    const start=headerRow>=0?headerRow+1:1;
-    const rows=[];
-    for(let i=start;i<raw.length;i++){
-      const r=raw[i];
-      if(!r[0]||String(r[0]).trim()==="")continue;
-      rows.push({
-        ad:         String(r[0]||"").trim(),
-        sevk_adresi:String(r[1]||"").trim(),
-        il:         String(r[2]||"").trim(),
-        ilce:       String(r[3]||"").trim()
-      });
-    }
-    if(!rows.length){showToast("Gecerli veri bulunamadi.",false);return;}
-    if(!confirm(rows.length+" musteri bulundu. Firebase'e yuklensin mi?"))return;
-    await musteriTopluKaydet(rows);
-    S.musteriler=await musteriGetir();
-    showToast("✅ "+rows.length+" musteri yuklendi!");render();
-  }catch(e){showToast("❌ Hata: "+e.message,false);}
-  input.value="";
-};
-window.MusteriDrop=async e=>{
-  e.preventDefault();e.target.classList.remove("drag");
-  const file=e.dataTransfer.files[0];if(!file)return;
-  await MusteriExcel({files:[file]});
-};
-window.MusteriOrnekIndir=()=>{
-  const wb=XLSX.utils.book_new();
-  const data=[
-    ["Firma","Sevk Adresi","Il","Ilce"],
-    ["Akkim Kimya A.S.","Organize Sanayi Bolgesi No:5","Yalova","Merkez"],
-    ["Marmara Insaat Ltd.","Bagcilar Mah. Sanayi Cad. No:12","Istanbul","Kadikoy"],
-    ["Ege Gida San. Tic.","Ataturk OSB 3. Cadde No:8","Izmir","Konak"],
-    ["Bosphorus Lojistik","Dudullu OSB 1. Sok. No:4","Istanbul","Pendik"],
-    ["Anadolu Celik Boru","Gebze OSB 100. Yil Bulvari No:22","Kocaeli","Gebze"],
-    ["Trakya Tekstil A.S.","Corlu OSB Plastik Cad. No:7","Tekirdag","Corlu"],
-    ["Marmara Ambalaj","Bursa OSB 6. Cadde No:15","Bursa","Osmangazi"],
-  ];
-  const ws=XLSX.utils.aoa_to_sheet(data);
-  ws["!cols"]=[{wch:28},{wch:36},{wch:14},{wch:14}];
-  ["A1","B1","C1","D1"].forEach(cell=>{if(ws[cell])ws[cell].s={font:{bold:true}};});
-  XLSX.utils.book_append_sheet(wb,ws,"Musteriler");
-  XLSX.writeFile(wb,"ornek_musteri_listesi.xlsx");
-  showToast("✅ Sablon indirildi!");
-};
-window.ExcelRapor=()=>{
-  const wb=XLSX.utils.book_new();
-  // Şehirler arası sheet
-  const saData=[["Tarih","Musteri","Varis Il","Varis Ilce","Firma","Plaka(lar)","Tonaj","Fiyat (TL)","Durum"]];
-  S.saGecmis.forEach(s=>{
-    const tarih=s.tarih?(s.tarih.toDate?s.tarih.toDate():new Date(s.tarih)).toLocaleDateString("tr-TR"):"";
-    const plakalar=(s.araclar||[]).map(a=>a.plaka||"").filter(Boolean).join(", ");
-    saData.push([tarih,s.musteri||"",s.varis_il,s.varis_ilce,s.firma_ad,plakalar,s.toplam_ton||s.tonaj||"",s.fiyat||0,s.durum||"Planlandı"]);
-  });
-  const ws1=XLSX.utils.aoa_to_sheet(saData);ws1["!cols"]=[{wch:14},{wch:16},{wch:12},{wch:14},{wch:22},{wch:16},{wch:10},{wch:14},{wch:14}];
-  XLSX.utils.book_append_sheet(wb,ws1,"Sehirler Arasi");
-  // Parsiyel sheet
-  const pData=[["Tarih","Kamyon No","Arac Tipi","Plaka","Durak Sayisi","Toplam Ton","Aciklama"]];
-  S.pGecmis.forEach(p=>{
-    const tarih=p.tarih?(p.tarih.toDate?p.tarih.toDate():new Date(p.tarih)).toLocaleDateString("tr-TR"):"";
-    (p.kamyonlar||[]).forEach(k=>{pData.push([tarih,k.no,k.tip||"",k.plaka||"",(k.noktalar||[]).length,k.toplam_ton||"",k.aciklama||""]);});
-  });
-  const ws2=XLSX.utils.aoa_to_sheet(pData);ws2["!cols"]=[{wch:14},{wch:10},{wch:12},{wch:14},{wch:12},{wch:12},{wch:24}];
-  XLSX.utils.book_append_sheet(wb,ws2,"Parsiyel");
-  // Firma performans sheet
-  const firmaMap={};S.saGecmis.forEach(s=>{if(!s.firma_ad)return;if(!firmaMap[s.firma_ad])firmaMap[s.firma_ad]={ad:s.firma_ad,sayi:0,toplam:0};firmaMap[s.firma_ad].sayi++;firmaMap[s.firma_ad].toplam+=(s.fiyat||0);});
-  const fData=[["Firma Adi","Sevkiyat Sayisi","Toplam Harcama (TL)","Ortalama Fiyat (TL)"]];
-  Object.values(firmaMap).sort((a,b)=>b.sayi-a.sayi).forEach(f=>{fData.push([f.ad,f.sayi,f.toplam,Math.round(f.toplam/f.sayi)]);});
-  const ws3=XLSX.utils.aoa_to_sheet(fData);ws3["!cols"]=[{wch:28},{wch:16},{wch:20},{wch:18}];
-  XLSX.utils.book_append_sheet(wb,ws3,"Firma Performansi");
-  XLSX.writeFile(wb,"sevkiyat_raporu_"+new Date().toLocaleDateString("tr-TR").replace(/\./g,"-")+".xlsx");
-  showToast("✅ Rapor indirildi!");
-};
-
-// ── INIT ──
-async function init(){
-  render();
-  try{const[f,s,p,m]=await Promise.all([fGetir(),saGetir(),pGetir(),musteriGetir()]);S.firmalar=f;S.saGecmis=s;S.pGecmis=p;S.musteriler=m;}
-  catch(e){S.toast={text:"Firebase baglanti hatasi: "+e.message,ok:false};}
-  S.loading=false;render();
-}
-init();
-</script>
+<body class="bg-background text-on-background min-h-screen">
+  <div id="app"></div>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
